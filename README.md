@@ -13,8 +13,8 @@ $ npm install --save-dev coffee-project gulp coffee-script
 
 1. Put a file named `gulpfile.coffee` in your project directory containing:
 
-	```coffee
-	(require "id-project")
+```coffee
+  (require "id-project")
     documentation: enabled: false # still has a bug
     livereload:    enabled: true
     browserify:    enabled: true
@@ -24,8 +24,7 @@ $ npm install --save-dev coffee-project gulp coffee-script
     watch:         enabled: true
     forever:       enabled: true
     tests:         enabled: true
-
-	```
+```
 
 2. Run gulp:
 
