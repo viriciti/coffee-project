@@ -1,7 +1,7 @@
 coffee-project
 ==============
 
-A gulp based project for coffee-script, forked from the awesome [id-project](https://github.com/Industrial/id-project) by [Industrial](https://github.com/Industrial)
+A gulp based project for coffee-script, copied from the awesome [id-project](https://github.com/Industrial/id-project) by [Industrial](https://github.com/Industrial)
 
 ## Installation
 
