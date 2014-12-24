@@ -22,8 +22,6 @@ log = require("../../lib/log");
 
 options = coffeeProjectOptions.browserify;
 
-console.log(options);
-
 enabled = options.enabled;
 
 entryFilePath = path.resolve(options.entryFilePath);

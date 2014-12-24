@@ -55,7 +55,7 @@ defaults.documentation = {
 defaults.less = {
   enabled: true,
   entryFilePath: "" + sourceClientDirectoryPath + "/less/app.less",
-  targetDirectoryPath: "" + targetClientDirectoryPath + "/client/css"
+  targetDirectoryPath: "" + targetClientDirectoryPath + "/css"
 };
 
 defaults.livereload = {

@@ -29,7 +29,7 @@ gulp.task("less:compile", function(cb) {
   log.debug("[less:compile] Target directory path: `" + targetDirectoryPath + "`.");
   fs.exists(entryFilePath, function(exists) {
     if (!exists) {
-      log.info("[less:compile] Entry file `" + entryFilePath + "` not found.");
+      log.warn("[less:compile] Entry file `" + entryFilePath + "` not found.");
       return cb();
     }
     return gulp.src(entryFilePath).pipe(gulpTap(function(file) {
