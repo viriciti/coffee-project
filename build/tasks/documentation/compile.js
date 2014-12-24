@@ -24,5 +24,5 @@ gulp.task("documentation:compile", function(cb) {
   log.debug("[documentation:compile] Source directory path: `" + sourceDirectoryPath + "`.");
   log.debug("[documentation:compile] Target directory path: `" + targetDirectoryPath + "`.");
   log.debug("[documentation:compile] Compiling.");
-  docs(sourceDirectoryPath, targetDirectoryPath["false"], cb);
+  docs(sourceDirectoryPath, targetDirectoryPath, false, cb);
 });

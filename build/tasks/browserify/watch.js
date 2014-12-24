@@ -1,4 +1,4 @@
-var enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, log, options, path, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
+var browserify, enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, jadeify, log, options, path, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
 
 fs = require("fs");
 
@@ -14,9 +14,15 @@ vinylSource = require("vinyl-source-stream");
 
 watchify = require("watchify");
 
+browserify = require("browserify");
+
+jadeify = require("jadeify");
+
 log = require("../../lib/log");
 
 options = coffeeProjectOptions.browserify;
+
+console.log(options);
 
 enabled = options.enabled;
 
@@ -37,23 +43,20 @@ gulp.task("browserify:watch", ["browserify:compile", "livereload:run"], function
   log.debug("[browserify:watch] Target directory path: `" + targetDirectoryPath + "`.");
   log.debug("[browserify:watch] Target filename: `" + targetFilename + "`.");
   fs.exists(entryFilePath, function(exists) {
-    var bundler, compile;
+    var bundle, bundler, compile;
     if (!exists) {
       log.info("[browserify:watch] Entry file `" + entryFilePath + "` not found.");
       return cb();
     }
-    bundler = watchify({
+    bundler = watchify(browserify({
       paths: options.paths,
       entries: [entryFilePath],
-      extensions: [".coffee", ".js", ".json", ".jade"]
-    });
-    bundler.transform("jadeify");
-    bundler.transform("debowerify");
+      extensions: [".coffee", ".js", ".json", ".jade"],
+      debug: true
+    }));
+    bundler.transform(jadeify);
+    bundle = bundler.bundle();
     compile = function() {
-      var bundle;
-      bundle = bundler.bundle({
-        debug: true
-      });
       bundle.on("error", log.error.bind(log));
       return bundle.pipe(vinylSource(targetFilename)).pipe(gulpTap(function(file) {
         log.debug("[browserify:watch] Compiled `" + file.path + "`.");

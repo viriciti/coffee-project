@@ -1,10 +1,12 @@
-var Transform, browserify, enabled, entryFilePath, fs, gulp, gulpTap, log, options, path, targetDirectoryPath, targetFilename, vinylSource;
+var Transform, browserify, enabled, entryFilePath, fs, gulp, gulpTap, jadeify, log, options, path, targetDirectoryPath, targetFilename, vinylSource;
 
 fs = require("fs");
 
 path = require("path");
 
 browserify = require("browserify");
+
+jadeify = require("jadeify");
 
 gulp = require("gulp");
 
@@ -37,19 +39,17 @@ gulp.task("browserify:compile", ["coffee:compile", "copy:compile"], function(cb)
   fs.exists(entryFilePath, function(exists) {
     var bundle, bundler;
     if (!exists) {
-      log.info("[browserify:compile] Entry file `" + entryFilePath + "` not found.");
+      log.warn("[browserify:compile] Entry file `" + entryFilePath + "` not found.");
       return cb();
     }
     bundler = browserify({
       paths: options.paths,
       entries: [entryFilePath],
-      extensions: [".coffee", ".js", ".json", ".jade"]
-    });
-    bundler.transform("jadeify");
-    bundler.transform("debowerify");
-    bundle = bundler.bundle({
+      extensions: [".coffee", ".js", ".json", ".jade"],
       debug: true
     });
+    bundler.transform(jadeify);
+    bundle = bundler.bundle();
     bundle.on("error", log.error.bind(log));
     bundle.pipe(vinylSource(targetFilename)).pipe(gulpTap(function(file) {
       log.debug("[browserify:compile] Compiled `" + file.path + "`.");
