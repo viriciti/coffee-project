@@ -1,13 +1,13 @@
 fs   = require "fs"
 path = require "path"
 
-gulp           = require "gulp"
-gulpTap        = require "gulp-tap"
-gulpLivereload = require "gulp-livereload"
-vinylSource    = require "vinyl-source-stream"
-watchify       = require "watchify"
 browserify     = require "browserify"
 jadeify        = require "jadeify"
+gulp           = require "gulp"
+gulpTap        = require "gulp-tap"
+vinylSource    = require "vinyl-source-stream"
+gulpLivereload = require "gulp-livereload"
+watchify       = require "watchify"
 
 log = require "../../lib/log"
 
@@ -19,7 +19,7 @@ targetFilename      = options.targetFilename
 watchEnabled        = coffeeProjectOptions.watch.enabled
 
 gulp.task "browserify:watch", [ "browserify:compile", "livereload:run" ], (cb) ->
-	unless enabled is true and watchEnabled is true
+	unless enabled and watchEnabled
 		log.info "Skipping browserify:watch: Disabled."
 		return cb()
 
@@ -33,33 +33,23 @@ gulp.task "browserify:watch", [ "browserify:compile", "livereload:run" ], (cb) -
 			return cb()
 
 		bundler = watchify browserify
-			paths:      options.paths
-			entries:    [ entryFilePath ]
-			extensions: [ ".coffee", ".js", ".json", ".jade" ]
-			debug:      true
+			cache:        {}
+			packageCache: {}
+			fullPaths:    true
+			extensions:   [ ".js", ".jade" ]
 
 		bundler.transform jadeify
 
-		bundle = bundler.bundle()
+		bundler.add entryFilePath
 
 		compile = ->
-			bundle.on "error", log.error.bind log
-
-			bundle
+			bundler.bundle()
 				.pipe vinylSource targetFilename
-
 				.pipe gulpTap (file) ->
 					log.debug "[browserify:watch] Compiled `#{file.path}`."
-					return
-
 				.pipe gulp.dest targetDirectoryPath
 				.pipe gulpLivereload auto: false
 
 		bundler.on "update", compile
 
-		# Needed for watchify to start watching..
 		compile()
-
-		return
-
-	return
