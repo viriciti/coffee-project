@@ -22,7 +22,7 @@ gulp.task "less:compile", (cb) ->
 
 	fs.exists entryFilePath, (exists) ->
 		unless exists
-			log.info "[less:compile] Entry file `#{entryFilePath}` not found."
+			log.warn "[less:compile] Entry file `#{entryFilePath}` not found."
 			return cb()
 
 		gulp.src entryFilePath
