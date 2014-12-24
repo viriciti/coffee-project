@@ -6,7 +6,6 @@ jadeify       = require "jadeify"
 gulp          = require "gulp"
 gulpTap       = require "gulp-tap"
 vinylSource   = require "vinyl-source-stream"
-{ Transform } = require "stream"
 
 log = require "../../lib/log"
 
@@ -31,26 +30,15 @@ gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 			return cb()
 
 		bundler = browserify
-			paths:      options.paths
-			entries:    [ entryFilePath ]
-			extensions: [ ".coffee", ".js", ".json", ".jade" ]
-			debug:      true
+			extensions:   [ ".js", ".jade" ]
 
 		bundler.transform jadeify
 
-		bundle = bundler.bundle()
+		bundler.add entryFilePath
 
-		bundle.on "error", log.error.bind log
-
-		bundle
+		bundler.bundle()
 			.pipe vinylSource targetFilename
 			.pipe gulpTap (file) ->
 				log.debug "[browserify:compile] Compiled `#{file.path}`."
-				return
-
 			.pipe gulp.dest targetDirectoryPath
 			.on "end", cb
-
-		return
-
-	return
