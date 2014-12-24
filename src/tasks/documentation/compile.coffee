@@ -20,6 +20,6 @@ gulp.task "documentation:compile", (cb) ->
 
 	log.debug "[documentation:compile] Compiling."
 
-	docs sourceDirectoryPath, targetDirectoryPath. false, cb
+	docs sourceDirectoryPath, targetDirectoryPath, false, cb
 
 	return
