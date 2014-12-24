@@ -1,7 +1,7 @@
 {
   "name": "coffee-project",
-  "version": "1.0.2",
-  "description": "A gulp based project for coffee-script, copied from the awesome id-project by Industrial",
+  "version": "1.0.3",
+  "description": "A gulp based project for coffee-script, based on the awesome id-project by Industrial",
   "repository": {
     "type": "git",
     "url": "git://github.com/viriciti/coffee-project.git"
