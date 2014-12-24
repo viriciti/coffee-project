@@ -2,6 +2,7 @@ fs   = require "fs"
 path = require "path"
 
 browserify    = require "browserify"
+jadeify       = require "jadeify"
 gulp          = require "gulp"
 gulpTap       = require "gulp-tap"
 vinylSource   = require "vinyl-source-stream"
@@ -26,18 +27,18 @@ gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 
 	fs.exists entryFilePath, (exists) ->
 		unless exists
-			log.info "[browserify:compile] Entry file `#{entryFilePath}` not found."
+			log.warn "[browserify:compile] Entry file `#{entryFilePath}` not found."
 			return cb()
 
 		bundler = browserify
 			paths:      options.paths
 			entries:    [ entryFilePath ]
 			extensions: [ ".coffee", ".js", ".json", ".jade" ]
+			debug:      true
 
-		bundler.transform "jadeify"
-		bundler.transform "debowerify"
+		bundler.transform jadeify
 
-		bundle = bundler.bundle debug: true
+		bundle = bundler.bundle()
 
 		bundle.on "error", log.error.bind log
 

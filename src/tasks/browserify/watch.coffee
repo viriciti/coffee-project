@@ -6,10 +6,13 @@ gulpTap        = require "gulp-tap"
 gulpLivereload = require "gulp-livereload"
 vinylSource    = require "vinyl-source-stream"
 watchify       = require "watchify"
+browserify     = require "browserify"
+jadeify        = require "jadeify"
 
 log = require "../../lib/log"
 
 options             = coffeeProjectOptions.browserify
+console.log options
 enabled             = options.enabled
 entryFilePath       = path.resolve options.entryFilePath
 targetDirectoryPath = path.resolve options.targetDirectoryPath
@@ -30,17 +33,17 @@ gulp.task "browserify:watch", [ "browserify:compile", "livereload:run" ], (cb) -
 			log.info "[browserify:watch] Entry file `#{entryFilePath}` not found."
 			return cb()
 
-		bundler = watchify
+		bundler = watchify browserify
 			paths:      options.paths
 			entries:    [ entryFilePath ]
 			extensions: [ ".coffee", ".js", ".json", ".jade" ]
+			debug:      true
 
-		bundler.transform "jadeify"
-		bundler.transform "debowerify"
+		bundler.transform jadeify
+
+		bundle = bundler.bundle()
 
 		compile = ->
-			bundle = bundler.bundle debug: true
-
 			bundle.on "error", log.error.bind log
 
 			bundle
