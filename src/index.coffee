@@ -13,9 +13,10 @@ targetServerDirectoryPath = "#{targetDirectoryPath}/server"
 
 defaults.browserify =
 	enabled:             true
-	entryFilePath:       "#{targetDirectoryPath}/client/js/app.js"
-	targetFilename:      "app.bundle.js"
+	entryFilePath:       "#{targetDirectoryPath}/client/js/app/app.js"
 	targetDirectoryPath: "#{targetClientDirectoryPath}/js"
+	targetFilename:      "app.bundle.js"
+	paths:               [ "#{targetClientDirectoryPath}/js/app" ]
 
 defaults.clean =
 	enabled:             true
