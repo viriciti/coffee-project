@@ -3,6 +3,7 @@ path = require "path"
 
 browserify    = require "browserify"
 jadeify       = require "jadeify"
+debowerify    = require "debowerify"
 gulp          = require "gulp"
 gulpTap       = require "gulp-tap"
 vinylSource   = require "vinyl-source-stream"
@@ -14,6 +15,7 @@ enabled             = options.enabled
 entryFilePath       = path.resolve options.entryFilePath
 targetDirectoryPath = path.resolve options.targetDirectoryPath
 targetFilename      = options.targetFilename
+paths               = options.paths
 
 gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 	unless enabled is true
@@ -30,9 +32,11 @@ gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 			return cb()
 
 		bundler = browserify
-			extensions:   [ ".js", ".jade" ]
+			extensions: [ ".js", ".jade" ]
+			paths:      paths
 
 		bundler.transform jadeify
+		bundler.transform debowerify
 
 		bundler.add entryFilePath
 
