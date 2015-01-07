@@ -1,4 +1,4 @@
-var browserify, enabled, entryFilePath, fs, gulp, gulpTap, jadeify, log, options, path, targetDirectoryPath, targetFilename, vinylSource;
+var browserify, debowerify, enabled, entryFilePath, fs, gulp, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource;
 
 fs = require("fs");
 
@@ -7,6 +7,8 @@ path = require("path");
 browserify = require("browserify");
 
 jadeify = require("jadeify");
+
+debowerify = require("debowerify");
 
 gulp = require("gulp");
 
@@ -26,6 +28,8 @@ targetDirectoryPath = path.resolve(options.targetDirectoryPath);
 
 targetFilename = options.targetFilename;
 
+paths = options.paths;
+
 gulp.task("browserify:compile", ["coffee:compile", "copy:compile"], function(cb) {
   if (enabled !== true) {
     log.info("[browserify:compile] Disabled.");
@@ -41,9 +45,11 @@ gulp.task("browserify:compile", ["coffee:compile", "copy:compile"], function(cb)
       return cb();
     }
     bundler = browserify({
-      extensions: [".js", ".jade"]
+      extensions: [".js", ".jade"],
+      paths: paths
     });
     bundler.transform(jadeify);
+    bundler.transform(debowerify);
     bundler.add(entryFilePath);
     return bundler.bundle().pipe(vinylSource(targetFilename)).pipe(gulpTap(function(file) {
       return log.debug("[browserify:compile] Compiled `" + file.path + "`.");

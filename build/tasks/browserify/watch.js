@@ -1,4 +1,4 @@
-var browserify, enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, jadeify, log, options, path, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
+var browserify, debowerify, enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
 
 fs = require("fs");
 
@@ -7,6 +7,8 @@ path = require("path");
 browserify = require("browserify");
 
 jadeify = require("jadeify");
+
+debowerify = require("debowerify");
 
 gulp = require("gulp");
 
@@ -32,6 +34,8 @@ targetFilename = options.targetFilename;
 
 watchEnabled = coffeeProjectOptions.watch.enabled;
 
+paths = options.paths;
+
 gulp.task("browserify:watch", ["browserify:compile", "livereload:run"], function(cb) {
   if (!(enabled && watchEnabled)) {
     log.info("Skipping browserify:watch: Disabled.");
@@ -50,9 +54,11 @@ gulp.task("browserify:watch", ["browserify:compile", "livereload:run"], function
       cache: {},
       packageCache: {},
       fullPaths: true,
-      extensions: [".js", ".jade"]
+      extensions: [".js", ".jade"],
+      paths: paths
     }));
     bundler.transform(jadeify);
+    bundler.transform(debowerify);
     bundler.add(entryFilePath);
     compile = function() {
       return bundler.bundle().pipe(vinylSource(targetFilename)).pipe(gulpTap(function(file) {
