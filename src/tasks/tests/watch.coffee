@@ -11,14 +11,22 @@ enabled       = options.enabled
 directoryPath = path.resolve options.directoryPath
 watchEnabled  = coffeeProjectOptions.watch.enabled
 
-runTests = ->
-	tests directoryPath, false, "spec", ->
+runTests = (somePath) ->
+	somePath or= directoryPath
+
+	unless 0 is somePath.indexOf directoryPath
+		filename     = somePath.split("/").pop()
+		testFilePath = path.resolve directoryPath, "./", "#{filename.split(".").shift()}_test.coffee"
+		if fs.existsSync testFilePath
+			somePath = testFilePath
+
+	tests somePath, false, "spec", ->
 
 changeHandler = (options) ->
 	return unless options.path.match /\.coffee/
 
 	# Run tests all cases (changed, added, deleted).
-	runTests()
+	runTests options.path
 
 gulp.task "tests:watch", [ "compile" ], (cb) ->
 	unless enabled and watchEnabled

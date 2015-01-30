@@ -17,7 +17,7 @@ tests = (directory, exit, reporter, cb) ->
 			"coffee:coffee-script/register"
 			"--reporter"
 			reporter
-			"test"
+			directory
 		]
 
 		childProcess.stdout.on "data", (chunk) ->

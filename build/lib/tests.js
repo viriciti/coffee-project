@@ -17,7 +17,7 @@ tests = function(directory, exit, reporter, cb) {
       log.info("Skipping mocha: Directory `" + directory + "` not found.");
       return cb();
     }
-    childProcess = cp.spawn(pathToMocha, ["--recursive", "--compilers", "coffee:coffee-script/register", "--reporter", reporter, "test"]);
+    childProcess = cp.spawn(pathToMocha, ["--recursive", "--compilers", "coffee:coffee-script/register", "--reporter", reporter, directory]);
     childProcess.stdout.on("data", function(chunk) {
       return process.stdout.write(chunk);
     });
