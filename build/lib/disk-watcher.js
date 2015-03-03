@@ -16,13 +16,13 @@ testDirectoryPath = path.resolve(options.testDirectoryPath);
 
 module.exports = {
   src: function() {
-    srcWatch || (srcWatch = gulp.watch("" + sourceDirectoryPath + "/**/*", {
+    srcWatch || (srcWatch = gulp.watch(sourceDirectoryPath + "/**/*", {
       read: false
     }));
     return srcWatch;
   },
   test: function() {
-    testWatch || (testWatch = gulp.watch("" + testDirectoryPath + "/**/*", {
+    testWatch || (testWatch = gulp.watch(testDirectoryPath + "/**/*", {
       read: false
     }));
     return testWatch;

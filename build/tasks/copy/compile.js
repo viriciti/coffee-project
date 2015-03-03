@@ -29,7 +29,7 @@ gulp.task("copy:compile", function(cb) {
   excluded = excluded.map(function(x) {
     return "!" + x;
   });
-  sourceGlob = ["" + sourceDirectoryPath + "/**/*"].concat(excluded);
+  sourceGlob = [sourceDirectoryPath + "/**/*"].concat(excluded);
   gulp.src(sourceGlob).pipe(gulpTap(function(file) {
     log.debug("[copy:compile] Copying `" + file.path + "`.");
   })).pipe(gulp.dest(targetDirectoryPath)).on("end", cb);
