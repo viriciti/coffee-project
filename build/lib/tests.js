@@ -8,7 +8,7 @@ cp = require("child_process");
 
 log = require("./log");
 
-pathToMocha = path.resolve("" + __dirname + "/../../node_modules/.bin/mocha");
+pathToMocha = path.resolve(__dirname + "/../../node_modules/.bin/mocha");
 
 tests = function(directory, exit, reporter, cb) {
   return fs.exists(directory, function(exists) {
