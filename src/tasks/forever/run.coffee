@@ -21,8 +21,10 @@ gulp.task "forever:run", [ "compile" ], (cb) ->
 		return cb()
 
 	child = new forever.Monitor entryFilePath,
-		watch: true
+		watch:          true
 		watchDirectory: watchDirectoryPath
+		minUptime:      2000
+		spinSleepTime:  1000
 
 	child.start()
 
