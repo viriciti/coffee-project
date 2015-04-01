@@ -1,4 +1,4 @@
-var browserify, debowerify, enabled, entryFilePath, fs, gulp, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource;
+var browserify, coffeeReactify, enabled, entryFilePath, fs, gulp, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource;
 
 fs = require("fs");
 
@@ -6,13 +6,13 @@ path = require("path");
 
 browserify = require("browserify");
 
-jadeify = require("jadeify");
-
-debowerify = require("debowerify");
+coffeeReactify = require("coffee-reactify");
 
 gulp = require("gulp");
 
 gulpTap = require("gulp-tap");
+
+jadeify = require("jadeify");
 
 vinylSource = require("vinyl-source-stream");
 
@@ -49,7 +49,7 @@ gulp.task("browserify:compile", ["coffee:compile", "copy:compile"], function(cb)
       paths: paths
     });
     bundler.transform(jadeify);
-    bundler.transform(debowerify);
+    bundler.transform(coffeeReactify);
     bundler.add(entryFilePath);
     return bundler.bundle().pipe(vinylSource(targetFilename)).pipe(gulpTap(function(file) {
       return log.debug("[browserify:compile] Compiled `" + file.path + "`.");

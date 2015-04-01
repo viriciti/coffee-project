@@ -2,12 +2,12 @@ fs   = require "fs"
 path = require "path"
 
 browserify     = require "browserify"
-jadeify        = require "jadeify"
-debowerify     = require "debowerify"
+coffeeReactify = require "coffee-reactify"
 gulp           = require "gulp"
-gulpTap        = require "gulp-tap"
-vinylSource    = require "vinyl-source-stream"
 gulpLivereload = require "gulp-livereload"
+gulpTap        = require "gulp-tap"
+jadeify        = require "jadeify"
+vinylSource    = require "vinyl-source-stream"
 watchify       = require "watchify"
 
 log = require "../../lib/log"
@@ -42,7 +42,7 @@ gulp.task "browserify:watch", [ "browserify:compile", "livereload:run" ], (cb) -
 			paths:        paths
 
 		bundler.transform jadeify
-		bundler.transform debowerify
+		bundler.transform coffeeReactify
 
 		bundler.add entryFilePath
 

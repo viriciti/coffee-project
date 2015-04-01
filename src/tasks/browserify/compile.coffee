@@ -1,12 +1,12 @@
 fs   = require "fs"
 path = require "path"
 
-browserify    = require "browserify"
-jadeify       = require "jadeify"
-debowerify    = require "debowerify"
-gulp          = require "gulp"
-gulpTap       = require "gulp-tap"
-vinylSource   = require "vinyl-source-stream"
+browserify     = require "browserify"
+coffeeReactify = require "coffee-reactify"
+gulp           = require "gulp"
+gulpTap        = require "gulp-tap"
+jadeify        = require "jadeify"
+vinylSource    = require "vinyl-source-stream"
 
 log = require "../../lib/log"
 
@@ -36,7 +36,7 @@ gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 			paths:      paths
 
 		bundler.transform jadeify
-		bundler.transform debowerify
+		bundler.transform coffeeReactify
 
 		bundler.add entryFilePath
 
