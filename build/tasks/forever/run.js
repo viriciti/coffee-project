@@ -29,7 +29,9 @@ gulp.task("forever:run", ["compile"], function(cb) {
   }
   child = new forever.Monitor(entryFilePath, {
     watch: true,
-    watchDirectory: watchDirectoryPath
+    watchDirectory: watchDirectoryPath,
+    minUptime: 2000,
+    spinSleepTime: 1000
   });
   child.start();
   return cb();
