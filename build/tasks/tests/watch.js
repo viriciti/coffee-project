@@ -25,7 +25,7 @@ runTests = function(somePath) {
   somePath || (somePath = directoryPath);
   if (0 !== somePath.indexOf(directoryPath)) {
     filename = somePath.split("/").pop();
-    testFilePath = path.resolve(directoryPath, "./", "" + (filename.split(".").shift()) + "_test.coffee");
+    testFilePath = path.resolve(directoryPath, "./", (filename.split(".").shift()) + "_test.coffee");
     if (fs.existsSync(testFilePath)) {
       somePath = testFilePath;
     }

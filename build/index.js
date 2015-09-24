@@ -12,20 +12,20 @@ targetDirectoryPath = "build";
 
 testDirectoryPath = "test";
 
-sourceClientDirectoryPath = "" + sourceDirectoryPath + "/client";
+sourceClientDirectoryPath = sourceDirectoryPath + "/client";
 
-sourceServerDirectoryPath = "" + sourceDirectoryPath + "/server";
+sourceServerDirectoryPath = sourceDirectoryPath + "/server";
 
-targetClientDirectoryPath = "" + targetDirectoryPath + "/client";
+targetClientDirectoryPath = targetDirectoryPath + "/client";
 
-targetServerDirectoryPath = "" + targetDirectoryPath + "/server";
+targetServerDirectoryPath = targetDirectoryPath + "/server";
 
 defaults.browserify = {
   enabled: true,
-  entryFilePath: "" + targetDirectoryPath + "/client/js/app/app.js",
-  targetDirectoryPath: "" + targetClientDirectoryPath + "/js",
+  entryFilePath: targetDirectoryPath + "/client/js/app/app.js",
+  targetDirectoryPath: targetClientDirectoryPath + "/js",
   targetFilename: "app.bundle.js",
-  paths: ["" + targetClientDirectoryPath + "/js/app"]
+  paths: [targetClientDirectoryPath + "/js/app"]
 };
 
 defaults.clean = {
@@ -54,8 +54,8 @@ defaults.documentation = {
 
 defaults.less = {
   enabled: true,
-  entryFilePath: "" + sourceClientDirectoryPath + "/less/app.less",
-  targetDirectoryPath: "" + targetClientDirectoryPath + "/css"
+  entryFilePath: sourceClientDirectoryPath + "/less/app.less",
+  targetDirectoryPath: targetClientDirectoryPath + "/css"
 };
 
 defaults.livereload = {
@@ -80,45 +80,45 @@ defaults.watch = {
 };
 
 applyDefaults = function(options) {
-  var k, task, taskOptions, v, _results;
-  _results = [];
+  var k, results, task, taskOptions, v;
+  results = [];
   for (task in defaults) {
     taskOptions = defaults[task];
     if (typeof taskOptions === "object") {
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
+      results.push((function() {
+        var results1;
+        results1 = [];
         for (k in taskOptions) {
           v = taskOptions[k];
           if (options[task] == null) {
             options[task] = {};
           }
           if (options[task][k] == null) {
-            _results1.push(options[task][k] = v);
+            results1.push(options[task][k] = v);
           } else {
-            _results1.push(void 0);
+            results1.push(void 0);
           }
         }
-        return _results1;
+        return results1;
       })());
     } else {
-      _results.push(options[task] = taskOptions);
+      results.push(options[task] = taskOptions);
     }
   }
-  return _results;
+  return results;
 };
 
 module.exports = function(options) {
-  var stat, stats, tasksDirectoryPath, _i, _len;
+  var i, len, stat, stats, tasksDirectoryPath;
   if (options == null) {
     options = {};
   }
-  tasksDirectoryPath = "" + __dirname + "/tasks";
+  tasksDirectoryPath = __dirname + "/tasks";
   applyDefaults(options);
   global.coffeeProjectOptions = options;
   stats = lsr.sync(tasksDirectoryPath);
-  for (_i = 0, _len = stats.length; _i < _len; _i++) {
-    stat = stats[_i];
+  for (i = 0, len = stats.length; i < len; i++) {
+    stat = stats[i];
     if (!stat.isDirectory()) {
       log.debug("Requiring module", stat.fullPath);
       require(stat.fullPath);

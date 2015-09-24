@@ -1,10 +1,10 @@
-var level, winston, _ref;
+var level, ref, winston;
 
 winston = require("winston");
 
 level = "info";
 
-if ((_ref = process.env.DEBUG) === "1" || _ref === "true") {
+if ((ref = process.env.DEBUG) === "1" || ref === "true") {
   level = "debug";
 }
 

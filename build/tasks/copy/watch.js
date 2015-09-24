@@ -1,4 +1,4 @@
-var copy, diskWatcher, enabled, excluded, fs, gulp, gulpLivereload, gulpTap, log, minimatch, options, path, reloadPath, rm, sourceDirectoryPath, targetDirectoryPath, watchEnabled, _ref;
+var copy, diskWatcher, enabled, excluded, fs, gulp, gulpLivereload, gulpTap, log, minimatch, options, path, ref, reloadPath, rm, sourceDirectoryPath, targetDirectoryPath, watchEnabled;
 
 fs = require("fs");
 
@@ -16,7 +16,7 @@ log = require("../../lib/log");
 
 diskWatcher = require("../../lib/disk-watcher");
 
-_ref = require("../../lib/files"), copy = _ref.copy, rm = _ref.rm;
+ref = require("../../lib/files"), copy = ref.copy, rm = ref.rm;
 
 options = coffeeProjectOptions.copy;
 
@@ -49,9 +49,9 @@ gulp.task("copy:watch", ["copy:compile", "livereload:run"], function(cb) {
   log.debug("[copy:watch] Source directory path: `" + sourceDirectoryPath + "`.");
   log.debug("[copy:watch] Target directory path: `" + targetDirectoryPath + "`.");
   diskWatcher.src().on("change", function(options) {
-    var exclude, _i, _len;
-    for (_i = 0, _len = excluded.length; _i < _len; _i++) {
-      exclude = excluded[_i];
+    var exclude, i, len;
+    for (i = 0, len = excluded.length; i < len; i++) {
+      exclude = excluded[i];
       if (minimatch(options.path, exclude)) {
         return;
       }
