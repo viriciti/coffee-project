@@ -6,15 +6,15 @@ path = require("path");
 
 browserify = require("browserify");
 
-jadeify = require("jadeify");
+coffeeReactify = require("coffee-reactify");
 
 debowerify = require("debowerify");
-
-coffeeReactify = require("coffee-reactify");
 
 gulp = require("gulp");
 
 gulpTap = require("gulp-tap");
+
+jadeify = require("jadeify");
 
 vinylSource = require("vinyl-source-stream");
 
