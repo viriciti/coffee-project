@@ -3,7 +3,6 @@ path = require "path"
 
 browserify     = require "browserify"
 coffeeReactify = require "coffee-reactify"
-debowerify     = require "debowerify"
 gulp           = require "gulp"
 gulpTap        = require "gulp-tap"
 jadeify        = require "jadeify"
@@ -37,7 +36,6 @@ gulp.task "browserify:compile", [ "coffee:compile", "copy:compile" ], (cb) ->
 			paths:      paths
 
 		bundler.transform jadeify
-		bundler.transform debowerify
 		bundler.transform coffeeReactify
 
 		bundler.add entryFilePath

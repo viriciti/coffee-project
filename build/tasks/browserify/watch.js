@@ -1,4 +1,4 @@
-var browserify, coffeeReactify, debowerify, enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
+var browserify, coffeeReactify, enabled, entryFilePath, fs, gulp, gulpLivereload, gulpTap, jadeify, log, options, path, paths, targetDirectoryPath, targetFilename, vinylSource, watchEnabled, watchify;
 
 fs = require("fs");
 
@@ -7,8 +7,6 @@ path = require("path");
 browserify = require("browserify");
 
 coffeeReactify = require("coffee-reactify");
-
-debowerify = require("debowerify");
 
 gulp = require("gulp");
 
@@ -60,7 +58,6 @@ gulp.task("browserify:watch", ["browserify:compile", "livereload:run"], function
       paths: paths
     }));
     bundler.transform(jadeify);
-    bundler.transform(debowerify);
     bundler.transform(coffeeReactify);
     bundler.add(entryFilePath);
     compile = function() {
