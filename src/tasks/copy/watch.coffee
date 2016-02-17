@@ -48,10 +48,6 @@ module.exports = (coffeeProjectOptions) ->
 
 			log.debug "[copy:watch] Removing: `#{filePath}`."
 
-			console.log filePath
-			console.log sourceDirectoryPath
-			console.log targetDirectoryPath
-
 			rm filePath, sourceDirectoryPath, targetDirectoryPath, (error) ->
 				log.error error if error
 

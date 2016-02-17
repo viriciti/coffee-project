@@ -68,9 +68,6 @@ module.exports = function(coffeeProjectOptions) {
         }
       }
       log.debug("[copy:watch] Removing: `" + filePath + "`.");
-      console.log(filePath);
-      console.log(sourceDirectoryPath);
-      console.log(targetDirectoryPath);
       return rm(filePath, sourceDirectoryPath, targetDirectoryPath, function(error) {
         if (error) {
           return log.error(error);
