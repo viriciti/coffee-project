@@ -1,4 +1,4 @@
-var enabled, entryFilePath, fs, gulp, gulpNodemon, log, options, path, watchGlob, watchNodemon;
+var fs, gulp, gulpNodemon, log, path;
 
 fs = require("fs");
 
@@ -10,31 +10,31 @@ gulpNodemon = require("gulp-nodemon");
 
 log = require("../../lib/log");
 
-options = coffeeProjectOptions.nodemon;
-
-enabled = options.enabled;
-
-entryFilePath = path.resolve(options.entryFilePath);
-
-watchGlob = options.watchGlob;
-
-watchNodemon = function() {
-  return gulpNodemon({
-    verbose: true,
-    script: entryFilePath,
-    watch: watchGlob,
-    ext: "jade js",
-    ignore: [".git/**/*", "node_modules/**/*", "src/**/*"]
+module.exports = function(coffeeProjectOptions) {
+  var enabled, entryFilePath, options, watchGlob, watchNodemon;
+  options = coffeeProjectOptions.nodemon;
+  enabled = options.enabled;
+  entryFilePath = path.resolve(options.entryFilePath);
+  watchGlob = options.watchGlob;
+  if (options.extra) {
+    watchGlob = watchGlob.concat(options.extra);
+  }
+  watchNodemon = function() {
+    return gulpNodemon({
+      verbose: !!+process.env.DEBUG,
+      script: entryFilePath,
+      watch: watchGlob,
+      ext: "jade js"
+    });
+  };
+  return gulp.task("nodemon:run", function(cb) {
+    if (!enabled) {
+      log.info("Skipping nodemon:run: Disabled.");
+      return cb();
+    }
+    log.debug("[nodemon:run] Entry file path: `" + entryFilePath + "`.");
+    log.debug("[nodemon:run] Watch Globs: `" + (watchGlob.join(",")) + "`.");
+    watchNodemon();
+    cb();
   });
 };
-
-gulp.task("nodemon:run", ["compile"], function(cb) {
-  if (enabled !== true) {
-    log.info("Skipping nodemon:run: Disabled.");
-    return cb();
-  }
-  log.debug("[nodemon:run] Entry file path: `" + entryFilePath + "`.");
-  log.debug("[nodemon:run] Watch Globs: `" + (watchGlob.join(",")) + "`.");
-  watchNodemon();
-  cb();
-});

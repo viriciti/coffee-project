@@ -6,29 +6,30 @@ gulpNodemon = require "gulp-nodemon"
 
 log = require "../../lib/log"
 
-options       = coffeeProjectOptions.nodemon
-enabled       = options.enabled
-entryFilePath = path.resolve options.entryFilePath
-watchGlob     = options.watchGlob
+module.exports = (coffeeProjectOptions) ->
+	options       = coffeeProjectOptions.nodemon
+	enabled       = options.enabled
+	entryFilePath = path.resolve options.entryFilePath
+	watchGlob     = options.watchGlob
+	watchGlob     = watchGlob.concat options.extra if options.extra
 
-watchNodemon = ->
-	gulpNodemon
-		verbose: true
-		script: entryFilePath
-		watch:  watchGlob
-		ext:    "jade js",
-		ignore: [ ".git/**/*", "node_modules/**/*", "src/**/*" ]
+	watchNodemon = ->
+		gulpNodemon
+			verbose: not not +process.env.DEBUG
+			script:  entryFilePath
+			watch:   watchGlob
+			ext:     "jade js"
 
-gulp.task "nodemon:run", [ "compile" ], (cb) ->
-	unless enabled is true
-		log.info "Skipping nodemon:run: Disabled."
-		return cb()
+	gulp.task "nodemon:run", (cb) ->
+		unless enabled
+			log.info "Skipping nodemon:run: Disabled."
+			return cb()
 
-	log.debug "[nodemon:run] Entry file path: `#{entryFilePath}`."
-	log.debug "[nodemon:run] Watch Globs: `#{watchGlob.join ","}`."
+		log.debug "[nodemon:run] Entry file path: `#{entryFilePath}`."
+		log.debug "[nodemon:run] Watch Globs: `#{watchGlob.join ","}`."
 
-	watchNodemon()
+		watchNodemon()
 
-	cb()
+		cb()
 
-	return
+		return

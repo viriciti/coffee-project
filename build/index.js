@@ -1,10 +1,14 @@
-var applyDefaults, defaults, log, lsr, sourceClientDirectoryPath, sourceDirectoryPath, sourceServerDirectoryPath, targetClientDirectoryPath, targetDirectoryPath, targetServerDirectoryPath, testDirectoryPath;
+var _, defaults, gulp, log, lsr, net, sourceClientDirectoryPath, sourceDirectoryPath, sourceServerDirectoryPath, targetClientDirectoryPath, targetDirectoryPath, targetServerDirectoryPath, testDirectoryPath;
 
-log = require("./lib/log");
+_ = require("lodash");
+
+net = require("net");
 
 lsr = require("lsr");
 
-defaults = {};
+gulp = require("gulp");
+
+log = require("./lib/log");
 
 sourceDirectoryPath = "src";
 
@@ -20,114 +24,89 @@ targetClientDirectoryPath = targetDirectoryPath + "/client";
 
 targetServerDirectoryPath = targetDirectoryPath + "/server";
 
-defaults.browserify = {
-  enabled: true,
-  entryFilePath: targetDirectoryPath + "/client/js/app/app.js",
-  targetDirectoryPath: targetClientDirectoryPath + "/js",
-  targetFilename: "app.bundle.js",
-  paths: [targetClientDirectoryPath + "/js/app"]
-};
-
-defaults.clean = {
-  enabled: true,
-  targetDirectoryPath: targetDirectoryPath
-};
-
-defaults.coffee = {
-  enabled: true,
-  sourceDirectoryPath: sourceDirectoryPath,
-  targetDirectoryPath: targetDirectoryPath
-};
-
-defaults.copy = {
-  enabled: true,
-  excluded: ["**/*.coffee", "**/*.less"],
-  sourceDirectoryPath: sourceDirectoryPath,
-  targetDirectoryPath: targetDirectoryPath
-};
-
-defaults.documentation = {
-  enabled: true,
-  sourceDirectoryPath: sourceDirectoryPath,
-  targetDirectoryPath: targetDirectoryPath
-};
-
-defaults.less = {
-  enabled: true,
-  entryFilePath: sourceClientDirectoryPath + "/less/app.less",
-  targetDirectoryPath: targetClientDirectoryPath + "/css"
-};
-
-defaults.livereload = {
-  enabled: true
-};
-
-defaults.nodemon = {
-  enabled: false,
-  entryFilePath: "app.js",
-  watchGlob: [sourceServerDirectoryPath + "/**/*.js"]
-};
-
-defaults.forever = {
-  enabled: true,
-  entryFilePath: "app.js",
-  watchDirectoryPath: sourceServerDirectoryPath
-};
-
-defaults.tests = {
-  enabled: true,
-  directoryPath: "test"
-};
-
-defaults.watch = {
-  enabled: true,
-  sourceDirectoryPath: sourceDirectoryPath,
-  testDirectoryPath: testDirectoryPath
-};
-
-applyDefaults = function(options) {
-  var k, results, task, taskOptions, v;
-  results = [];
-  for (task in defaults) {
-    taskOptions = defaults[task];
-    if (typeof taskOptions === "object") {
-      results.push((function() {
-        var results1;
-        results1 = [];
-        for (k in taskOptions) {
-          v = taskOptions[k];
-          if (options[task] == null) {
-            options[task] = {};
-          }
-          if (options[task][k] == null) {
-            results1.push(options[task][k] = v);
-          } else {
-            results1.push(void 0);
-          }
-        }
-        return results1;
-      })());
-    } else {
-      results.push(options[task] = taskOptions);
+defaults = {
+  bundle: {
+    enabled: true,
+    externals: [],
+    vendor: {
+      entry: sourceClientDirectoryPath + "/js/vendor/vendor.coffee",
+      target: targetClientDirectoryPath + "/js",
+      bundle: "vendor.bundle.js",
+      source: sourceClientDirectoryPath + "/js/app/vendor"
+    },
+    app: {
+      entry: sourceClientDirectoryPath + "/js/app/app.coffee",
+      target: targetClientDirectoryPath + "/js",
+      bundle: "app.bundle.js",
+      paths: [sourceClientDirectoryPath + "/js/app"],
+      extensions: [".coffee", ".jade", ".cjsx"],
+      transforms: ["coffee-reactify", "jadeify"]
     }
+  },
+  clean: {
+    enabled: true,
+    targetDirectoryPath: targetDirectoryPath
+  },
+  coffee: {
+    enabled: true,
+    sourceDirectoryPath: sourceServerDirectoryPath,
+    targetDirectoryPath: targetServerDirectoryPath
+  },
+  copy: {
+    enabled: true,
+    excluded: ["**/*.coffee", "**/*.less", "**/*.cjsx", "src/client/js{,/**}"],
+    sourceDirectoryPath: sourceDirectoryPath,
+    targetDirectoryPath: targetDirectoryPath
+  },
+  documentation: {
+    enabled: true,
+    sourceDirectoryPath: sourceDirectoryPath,
+    targetDirectoryPath: targetDirectoryPath
+  },
+  less: {
+    enabled: true,
+    entryFilePath: sourceClientDirectoryPath + "/less/app.less",
+    targetDirectoryPath: targetClientDirectoryPath + "/css"
+  },
+  livereload: {
+    enabled: true
+  },
+  nodemon: {
+    enabled: true,
+    entryFilePath: "app.js",
+    watchGlob: [sourceServerDirectoryPath + "/**/*"],
+    extra: ["cfg.js", "app.js"]
+  },
+  forever: {
+    enabled: false,
+    entryFilePath: "app.js",
+    watchDirectoryPath: sourceServerDirectoryPath
+  },
+  tests: {
+    enabled: true,
+    directoryPath: "test"
+  },
+  watch: {
+    enabled: true,
+    sourceDirectoryPath: sourceDirectoryPath,
+    testDirectoryPath: testDirectoryPath
   }
-  return results;
 };
 
 module.exports = function(options) {
-  var i, len, stat, stats, tasksDirectoryPath;
+  var i, len, ref, results, stat;
   if (options == null) {
     options = {};
   }
-  tasksDirectoryPath = __dirname + "/tasks";
-  applyDefaults(options);
-  global.coffeeProjectOptions = options;
-  stats = lsr.sync(tasksDirectoryPath);
-  for (i = 0, len = stats.length; i < len; i++) {
-    stat = stats[i];
-    if (!stat.isDirectory()) {
-      log.debug("Requiring module", stat.fullPath);
-      require(stat.fullPath);
+  options = _.merge(defaults, options);
+  ref = lsr.sync(__dirname + "/tasks");
+  results = [];
+  for (i = 0, len = ref.length; i < len; i++) {
+    stat = ref[i];
+    if (stat.isDirectory()) {
+      continue;
     }
+    results.push(require(stat.fullPath)(options));
   }
+  return results;
 };

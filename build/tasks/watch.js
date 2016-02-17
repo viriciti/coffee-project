@@ -2,4 +2,6 @@ var gulp;
 
 gulp = require("gulp");
 
-gulp.task("watch", ["copy:watch", "coffee:watch", "browserify:watch", "forever:run", "nodemon:run", "less:watch", "tests:watch"]);
+module.exports = function() {
+  return gulp.task("watch", ["livereload:run", "copy:watch", "coffee:watch", "less:watch", "bundle:watch", "forever:run", "nodemon:run", "tests:watch"]);
+};
