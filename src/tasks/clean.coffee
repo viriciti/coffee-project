@@ -18,3 +18,5 @@ module.exports = (coffeeProjectOptions) ->
 		log.debug "[clean] Cleaning `#{targetDirectoryPath}`."
 
 		cleanBuildDirectory targetDirectoryPath, cb
+
+		return
