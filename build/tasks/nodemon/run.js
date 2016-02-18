@@ -11,7 +11,7 @@ gulpNodemon = require("gulp-nodemon");
 log = require("../../lib/log");
 
 module.exports = function(coffeeProjectOptions) {
-  var enabled, entryFilePath, options, watchGlob, watchNodemon;
+  var enabled, entryFilePath, extensions, options, watchGlob, watchNodemon;
   options = coffeeProjectOptions.nodemon;
   enabled = options.enabled;
   entryFilePath = path.resolve(options.entryFilePath);
@@ -19,12 +19,13 @@ module.exports = function(coffeeProjectOptions) {
   if (options.extra) {
     watchGlob = watchGlob.concat(options.extra);
   }
+  extensions = options.extensions || [];
   watchNodemon = function() {
     return gulpNodemon({
       verbose: !!+process.env.DEBUG,
       script: entryFilePath,
       watch: watchGlob,
-      ext: "jade js"
+      ext: extensions.join(" ")
     });
   };
   return gulp.task("nodemon:run", function(cb) {

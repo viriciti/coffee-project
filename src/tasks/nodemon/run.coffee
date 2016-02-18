@@ -12,13 +12,14 @@ module.exports = (coffeeProjectOptions) ->
 	entryFilePath = path.resolve options.entryFilePath
 	watchGlob     = options.watchGlob
 	watchGlob     = watchGlob.concat options.extra if options.extra
+	extensions    = options.extensions or []
 
 	watchNodemon = ->
 		gulpNodemon
 			verbose: not not +process.env.DEBUG
 			script:  entryFilePath
 			watch:   watchGlob
-			ext:     "jade js"
+			ext:     extensions.join " "
 
 	gulp.task "nodemon:run", (cb) ->
 		unless enabled

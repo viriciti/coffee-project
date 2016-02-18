@@ -70,8 +70,9 @@ defaults = {
   nodemon: {
     enabled: true,
     entryFilePath: "app.js",
-    watchGlob: [sourceServerDirectoryPath + "/**/*"],
-    extra: ["cfg.js", "app.js"]
+    watchGlob: [targetServerDirectoryPath + "/**/*"],
+    extra: ["cfg.js", "app.js"],
+    extensions: ["js", "jade"]
   },
   forever: {
     enabled: false,
