@@ -1,7 +1,5 @@
 _   = require "lodash"
-net = require "net"
 lsr = require "lsr"
-gulp = require "gulp"
 
 log = require "./lib/log"
 

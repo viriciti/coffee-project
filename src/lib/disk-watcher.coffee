@@ -23,16 +23,3 @@ module.exports = (coffeeProjectOptions) ->
 			.pipe watch "#{testDirectoryPath}/**/*"
 
 		testWatch
-
-# module.exports = (coffeeProjectOptions) ->
-# 	options             = coffeeProjectOptions.watch
-# 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
-# 	testDirectoryPath   = path.resolve options.testDirectoryPath
-
-# 	src: ->
-# 		srcWatch or= gulp.watch "#{sourceDirectoryPath}/**/*", read: false
-# 		srcWatch
-
-# 	test: ->
-# 		testWatch or= gulp.watch "#{testDirectoryPath}/**/*",  read: false
-# 		testWatch
