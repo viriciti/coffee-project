@@ -1,12 +1,8 @@
-var _, defaults, gulp, log, lsr, net, sourceClientDirectoryPath, sourceDirectoryPath, sourceServerDirectoryPath, targetClientDirectoryPath, targetDirectoryPath, targetServerDirectoryPath, testDirectoryPath;
+var _, defaults, log, lsr, sourceClientDirectoryPath, sourceDirectoryPath, sourceServerDirectoryPath, targetClientDirectoryPath, targetDirectoryPath, targetServerDirectoryPath, testDirectoryPath;
 
 _ = require("lodash");
 
-net = require("net");
-
 lsr = require("lsr");
-
-gulp = require("gulp");
 
 log = require("./lib/log");
 

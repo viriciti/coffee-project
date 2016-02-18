@@ -19,6 +19,6 @@ module.exports = function(coffeeProjectOptions) {
       return cb();
     }
     log.debug("[clean] Cleaning `" + targetDirectoryPath + "`.");
-    return cleanBuildDirectory(targetDirectoryPath, cb);
+    cleanBuildDirectory(targetDirectoryPath, cb);
   });
 };
