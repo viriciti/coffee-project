@@ -23,19 +23,21 @@ module.exports = function(coffeeProjectOptions) {
   runTests = function(somePath) {
     var filename, testFilePath;
     somePath || (somePath = directoryPath);
-    if (0 !== somePath.indexOf(directoryPath)) {
+    if (0 === somePath.indexOf(directoryPath)) {
+      return tests(somePath, false, "spec", function() {});
+    } else {
       filename = somePath.split("/").pop();
       testFilePath = path.resolve(directoryPath, "./", (filename.split(".").shift()) + "_test.coffee");
       if (fs.existsSync(testFilePath)) {
-        somePath = testFilePath;
+        return tests(testFilePath, false, "spec", function() {});
       }
     }
-    return tests(somePath, false, "spec", function() {});
   };
   changeHandler = function(filePath) {
     if (!filePath.match(/\.coffee/)) {
       return;
     }
+    log.debug("[tests:watch] responded to `" + filePath + "`");
     return runTests(filePath);
   };
   return gulp.task("tests:watch", function(cb) {

@@ -17,16 +17,17 @@ module.exports = (coffeeProjectOptions) ->
 	runTests = (somePath) ->
 		somePath or= directoryPath
 
-		unless 0 is somePath.indexOf directoryPath
+		if 0 is somePath.indexOf directoryPath
+			tests somePath, false, "spec", ->
+		else
 			filename     = somePath.split("/").pop()
 			testFilePath = path.resolve directoryPath, "./", "#{filename.split(".").shift()}_test.coffee"
 			if fs.existsSync testFilePath
-				somePath = testFilePath
-
-		tests somePath, false, "spec", ->
+				tests testFilePath, false, "spec", ->
 
 	changeHandler = (filePath) ->
 		return unless filePath.match /\.coffee/
+		log.debug "[tests:watch] responded to `#{filePath}`"
 		runTests filePath
 
 	gulp.task "tests:watch", (cb) ->
