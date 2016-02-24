@@ -1,4 +1,4 @@
-var cleanBuildDirectory, enabled, gulp, log, options, path, targetDirectoryPath;
+var cleanBuildDirectory, gulp, log, path;
 
 path = require("path");
 
@@ -8,17 +8,17 @@ log = require("../lib/log");
 
 cleanBuildDirectory = require("../lib/clean").cleanBuildDirectory;
 
-options = coffeeProjectOptions.clean;
-
-enabled = options.enabled;
-
-targetDirectoryPath = path.resolve(options.targetDirectoryPath);
-
-gulp.task("clean", function(cb) {
-  if (enabled !== true) {
-    log.info("Skipping clean: Disabled.");
-    return cb();
-  }
-  log.debug("[clean] Cleaning `" + targetDirectoryPath + "`.");
-  cleanBuildDirectory(targetDirectoryPath, cb);
-});
+module.exports = function(coffeeProjectOptions) {
+  var enabled, options, targetDirectoryPath;
+  options = coffeeProjectOptions.clean;
+  enabled = options.enabled;
+  targetDirectoryPath = path.resolve(options.targetDirectoryPath);
+  return gulp.task("clean", function(cb) {
+    if (!enabled) {
+      log.info("Skipping clean: Disabled.");
+      return cb();
+    }
+    log.debug("[clean] Cleaning `" + targetDirectoryPath + "`.");
+    cleanBuildDirectory(targetDirectoryPath, cb);
+  });
+};

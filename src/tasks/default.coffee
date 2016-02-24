@@ -1,4 +1,22 @@
-gulp = require "gulp"
+gulp        = require "gulp"
+runSequence = require "run-sequence"
 
-gulp.task "default", [ "clean" ], ->
-	gulp.start "watch"
+module.exports = ->
+
+	gulp.task "default", (cb) ->
+		runSequence [
+			"bundle:vendor"
+			"coffee:compile"
+			"copy:compile"
+			"documentation:compile"
+			"less:compile"
+		], [
+			"livereload:run"
+			"copy:watch"
+			"less:watch"
+			"coffee:watch"
+			"bundle:watch"
+			"forever:run"
+			"nodemon:run"
+			"tests:watch"
+		], cb

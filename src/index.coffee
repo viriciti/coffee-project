@@ -1,7 +1,7 @@
-log = require "./lib/log"
+_   = require "lodash"
 lsr = require "lsr"
 
-defaults = {}
+log = require "./lib/log"
 
 sourceDirectoryPath       = "src"
 targetDirectoryPath       = "build"
@@ -11,85 +11,75 @@ sourceServerDirectoryPath = "#{sourceDirectoryPath}/server"
 targetClientDirectoryPath = "#{targetDirectoryPath}/client"
 targetServerDirectoryPath = "#{targetDirectoryPath}/server"
 
-defaults.browserify =
-	enabled:             true
-	entryFilePath:       "#{targetDirectoryPath}/client/js/app/app.js"
-	targetDirectoryPath: "#{targetClientDirectoryPath}/js"
-	targetFilename:      "app.bundle.js"
-	paths:               [ "#{targetClientDirectoryPath}/js/app" ]
+defaults =
+	bundle:
+		enabled:   true
+		externals: []
+		vendor:
+				entry:  "#{sourceClientDirectoryPath}/js/vendor/vendor.coffee"
+				target: "#{targetClientDirectoryPath}/js"
+				bundle: "vendor.bundle.js"
+				source: "#{sourceClientDirectoryPath}/js/app/vendor"
+		app:
+				entry:      "#{sourceClientDirectoryPath}/js/app/app.coffee"
+				target:     "#{targetClientDirectoryPath}/js"
+				bundle:     "app.bundle.js"
+				paths:      [ "#{sourceClientDirectoryPath}/js/app" ]
+				extensions: [ ".coffee", ".jade", ".cjsx" ]
+				transforms: [ "coffee-reactify", "jadeify" ]
 
-defaults.clean =
-	enabled:             true
-	targetDirectoryPath: targetDirectoryPath
+	clean:
+		enabled:             true
+		targetDirectoryPath: targetDirectoryPath
 
-defaults.coffee =
-	enabled:             true
-	sourceDirectoryPath: sourceDirectoryPath
-	targetDirectoryPath: targetDirectoryPath
+	coffee:
+		enabled:             true
+		sourceDirectoryPath: sourceServerDirectoryPath
+		targetDirectoryPath: targetServerDirectoryPath
 
-defaults.copy =
-	enabled:             true
-	excluded:            [ "**/*.coffee", "**/*.less" ]
-	sourceDirectoryPath: sourceDirectoryPath
-	targetDirectoryPath: targetDirectoryPath
+	copy:
+		enabled:             true
+		excluded:            [ "**/*.coffee", "**/*.less", "**/*.cjsx", "src/client/js{,/**}" ]
+		sourceDirectoryPath: sourceDirectoryPath
+		targetDirectoryPath: targetDirectoryPath
 
-defaults.documentation =
-	enabled:             true
-	sourceDirectoryPath: sourceDirectoryPath
-	targetDirectoryPath: targetDirectoryPath
+	documentation:
+		enabled:             true
+		sourceDirectoryPath: sourceDirectoryPath
+		targetDirectoryPath: targetDirectoryPath
 
-defaults.less =
-	enabled:             true
-	entryFilePath:       "#{sourceClientDirectoryPath}/less/app.less"
-	targetDirectoryPath: "#{targetClientDirectoryPath}/css"
+	less:
+		enabled:             true
+		entryFilePath:       "#{sourceClientDirectoryPath}/less/app.less"
+		targetDirectoryPath: "#{targetClientDirectoryPath}/css"
 
-defaults.livereload =
-	enabled:             true
+	livereload:
+		enabled:             true
 
-defaults.nodemon =
-  enabled:             false,
-  entryFilePath:       "app.js",
-  watchGlob:           ["#{sourceServerDirectoryPath}/**/*.js"]
+	nodemon:
+	  enabled:             true,
+	  entryFilePath:       "app.js",
+	  watchGlob:           [ "#{targetServerDirectoryPath}/**/*" ]
+	  extra:               [ "cfg.js", "app.js" ]
+	  extensions:          [ "js", "jade" ]
 
-defaults.forever =
-	enabled:             true
-	entryFilePath:       "app.js"
-	watchDirectoryPath:  sourceServerDirectoryPath
+	forever:
+		enabled:             false
+		entryFilePath:       "app.js"
+		watchDirectoryPath:  sourceServerDirectoryPath
 
-defaults.tests =
-	enabled:             true
-	directoryPath:       "test"
+	tests:
+		enabled:             true
+		directoryPath:       "test"
 
-defaults.watch =
-	enabled:             true
-	sourceDirectoryPath: sourceDirectoryPath
-	testDirectoryPath:   testDirectoryPath
-
-applyDefaults = (options) ->
-	for task, taskOptions of defaults
-		if typeof taskOptions is "object"
-			for k, v of taskOptions
-				unless options[task]?
-					options[task] = {}
-
-				unless options[task][k]?
-					options[task][k] = v
-		else
-			options[task] = taskOptions
+	watch:
+		enabled:             true
+		sourceDirectoryPath: sourceDirectoryPath
+		testDirectoryPath:   testDirectoryPath
 
 module.exports = (options = {}) ->
-	tasksDirectoryPath = "#{__dirname}/tasks"
+	options = _.merge defaults, options
 
-	applyDefaults options
-
-	global.coffeeProjectOptions = options
-
-	stats = lsr.sync tasksDirectoryPath
-
-	for stat in stats
-		unless stat.isDirectory()
-			log.debug "Requiring module", stat.fullPath
-
-			require stat.fullPath
-
-	return
+	for stat in lsr.sync "#{__dirname}/tasks"
+		continue if stat.isDirectory()
+		require(stat.fullPath) options

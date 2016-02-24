@@ -1,63 +1,54 @@
-fs   = require "fs"
-path = require "path"
-
-gulp           = require "gulp"
-gulpLivereload = require "gulp-livereload"
-gulpTap        = require "gulp-tap"
-minimatch      = require "minimatch"
+fs        = require "fs"
+gulp      = require "gulp"
+minimatch = require "minimatch"
 
 log          = require "../../lib/log"
 diskWatcher  = require "../../lib/disk-watcher"
 { copy, rm } = require "../../lib/files"
 
-options             = coffeeProjectOptions.copy
-enabled             = options.enabled
-excluded            = options.excluded
-sourceDirectoryPath = path.resolve options.sourceDirectoryPath
-targetDirectoryPath = path.resolve options.targetDirectoryPath
-watchEnabled        = coffeeProjectOptions.watch.enabled
+module.exports = (coffeeProjectOptions) ->
+	options             = coffeeProjectOptions.copy
+	enabled             = options.enabled
+	excluded            = options.excluded
+	sourceDirectoryPath = options.sourceDirectoryPath
+	targetDirectoryPath = options.targetDirectoryPath
+	watchEnabled        = coffeeProjectOptions.watch.enabled
 
-reloadPath = (path) ->
-	return if path.match /\.jade$/
+	gulp.task "copy:watch", (cb) ->
+		unless enabled and watchEnabled
+			log.info "Skipping copy:watch: Disabled."
+			return cb()
 
-	gulpLivereload auto: false
-		.write
-			path: path
+		log.debug "[copy:watch] Source directory path: `#{sourceDirectoryPath}`."
+		log.debug "[copy:watch] Target directory path: `#{targetDirectoryPath}`."
 
-gulp.task "copy:watch", [ "copy:compile", "livereload:run" ], (cb) ->
-	unless enabled is true and watchEnabled is true
-		log.info "Skipping copy:watch: Disabled."
-		return cb()
+		watcher = diskWatcher(coffeeProjectOptions).src()
 
-	log.debug "[copy:watch] Source directory path: `#{sourceDirectoryPath}`."
-	log.debug "[copy:watch] Target directory path: `#{targetDirectoryPath}`."
+		watcher.on "change", (filePath) ->
+			for exclude in excluded
+				return if minimatch filePath, exclude
 
-	diskWatcher.src().on "change", (options) ->
-		for exclude in excluded
-			if minimatch options.path, exclude
-				return
+			log.debug "[copy:watch] Copying: `#{filePath}`."
 
-		switch options.type
-			when "changed"
-				log.debug "[copy:watch] Copying: `#{options.path}`."
+			copy filePath, sourceDirectoryPath, targetDirectoryPath, (error) ->
+				log.error error if error
 
-				copy options.path, sourceDirectoryPath, targetDirectoryPath, (error) ->
-					log.error error if error
+		watcher.on "add", (filePath) ->
+			for exclude in excluded
+				return if minimatch filePath, exclude
 
-					reloadPath options.path
+			log.debug "[copy:watch] Copying: `#{filePath}`."
 
-			when "added"
-				log.debug "[copy:watch] Copying: `#{options.path}`."
+			copy filePath, sourceDirectoryPath, targetDirectoryPath, (error) ->
+				log.error error if error
 
-				copy options.path, sourceDirectoryPath, targetDirectoryPath, (error) ->
-					log.error error if error
+		watcher.on "unlink", (filePath) ->
+			for exclude in excluded
+				return if minimatch filePath, exclude
 
-					reloadPath options.path
+			log.debug "[copy:watch] Removing: `#{filePath}`."
 
-			when "deleted"
-				log.debug "[copy:watch] Removing: `#{options.path}`."
+			rm filePath, sourceDirectoryPath, targetDirectoryPath, (error) ->
+				log.error error if error
 
-				rm options.path, targetDirectoryPath, (error) ->
-					log.error error if error
-
-	return
+		return

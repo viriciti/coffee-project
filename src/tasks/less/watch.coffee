@@ -1,5 +1,4 @@
 fs             = require "fs"
-path           = require "path"
 gulp           = require "gulp"
 gulpLess       = require "gulp-less"
 gulpLivereload = require "gulp-livereload"
@@ -7,37 +6,46 @@ gulpLivereload = require "gulp-livereload"
 log         = require "../../lib/log"
 diskWatcher = require "../../lib/disk-watcher"
 
-options             = coffeeProjectOptions.less
-enabled             = options.enabled
-entryFilePath       = path.resolve options.entryFilePath
-targetDirectoryPath = path.resolve options.targetDirectoryPath
-watchEnabled        = coffeeProjectOptions.watch.enabled
+module.exports = (coffeeProjectOptions) ->
+	options             = coffeeProjectOptions.less
+	enabled             = options.enabled
+	entryFilePath       = options.entryFilePath
+	targetDirectoryPath = options.targetDirectoryPath
+	watchEnabled        = coffeeProjectOptions.watch.enabled
+	watcher             = diskWatcher(coffeeProjectOptions).src()
 
-gulp.task "less:watch", [ "less:compile", "livereload:run" ], (cb) ->
-	unless enabled is true and watchEnabled is true
-		log.info "Skipping less:watch: Disabled."
-		return cb()
-
-	log.debug "[less:watch] Entry file path: `#{entryFilePath}`."
-	log.debug "[less:watch] Target directory path: `#{targetDirectoryPath}`."
-
-	fs.exists entryFilePath, (exists) ->
-		unless exists
-			log.info "Skipping less:compile: File `#{entryFilePath}` not found."
+	gulp.task "less:watch", (cb) ->
+		unless enabled and watchEnabled
+			log.info "Skipping less:watch: Disabled."
 			return cb()
 
-		compile = ->
-			gulp.src entryFilePath
-				.pipe gulpLess()
-				.pipe gulp.dest targetDirectoryPath
-				.pipe gulpLivereload auto: false
+		log.debug "[less:watch] Entry file path: `#{entryFilePath}`."
+		log.debug "[less:watch] Target directory path: `#{targetDirectoryPath}`."
 
-		diskWatcher.src().on "change", (options) ->
-			return unless options.path.match /\.less/
+		fs.exists entryFilePath, (exists) ->
+			unless exists
+				log.info "Skipping less:compile: File `#{entryFilePath}` not found."
+				return cb()
 
-			log.debug "[less:watch] Compiling `#{entryFilePath}`."
+			compile = ->
+				gulp.src entryFilePath
+					.pipe gulpLess()
+					.pipe gulp.dest targetDirectoryPath
+					.pipe gulpLivereload auto: false
 
-			# Compile in all cases (changed, added, deleted).
-			compile()
+			watcher.on "change", (filePath) ->
+				return unless filePath.match /\.less/
+				log.debug "[less:watch] Compiling `#{entryFilePath}`."
+				compile()
 
-	return
+			watcher.on "add", (filePath) ->
+				return unless filePath.match /\.less/
+				log.debug "[less:watch] Compiling `#{entryFilePath}`."
+				compile()
+
+			watcher.on "unlink", (filePath) ->
+				return unless filePath.match /\.less/
+				log.debug "[less:watch] Compiling `#{entryFilePath}`."
+				compile()
+
+		return
