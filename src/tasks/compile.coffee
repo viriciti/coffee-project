@@ -1,10 +1,10 @@
-async = require "async"
 gulp = require "gulp"
 
-gulp.task "compile", [
-	"browserify:compile"
-	"coffee:compile"
-	"copy:compile"
-	"documentation:compile"
-	"less:compile"
-]
+module.exports = ->
+	gulp.task "compile", [
+		"bundle:compile"
+		"coffee:compile"
+		"copy:compile"
+		"documentation:compile"
+		"less:compile"
+	]

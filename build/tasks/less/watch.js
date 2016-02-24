@@ -1,8 +1,6 @@
-var diskWatcher, enabled, entryFilePath, fs, gulp, gulpLess, gulpLivereload, log, options, path, targetDirectoryPath, watchEnabled;
+var diskWatcher, fs, gulp, gulpLess, gulpLivereload, log;
 
 fs = require("fs");
-
-path = require("path");
 
 gulp = require("gulp");
 
@@ -14,40 +12,53 @@ log = require("../../lib/log");
 
 diskWatcher = require("../../lib/disk-watcher");
 
-options = coffeeProjectOptions.less;
-
-enabled = options.enabled;
-
-entryFilePath = path.resolve(options.entryFilePath);
-
-targetDirectoryPath = path.resolve(options.targetDirectoryPath);
-
-watchEnabled = coffeeProjectOptions.watch.enabled;
-
-gulp.task("less:watch", ["less:compile", "livereload:run"], function(cb) {
-  if (!(enabled === true && watchEnabled === true)) {
-    log.info("Skipping less:watch: Disabled.");
-    return cb();
-  }
-  log.debug("[less:watch] Entry file path: `" + entryFilePath + "`.");
-  log.debug("[less:watch] Target directory path: `" + targetDirectoryPath + "`.");
-  fs.exists(entryFilePath, function(exists) {
-    var compile;
-    if (!exists) {
-      log.info("Skipping less:compile: File `" + entryFilePath + "` not found.");
+module.exports = function(coffeeProjectOptions) {
+  var enabled, entryFilePath, options, targetDirectoryPath, watchEnabled, watcher;
+  options = coffeeProjectOptions.less;
+  enabled = options.enabled;
+  entryFilePath = options.entryFilePath;
+  targetDirectoryPath = options.targetDirectoryPath;
+  watchEnabled = coffeeProjectOptions.watch.enabled;
+  watcher = diskWatcher(coffeeProjectOptions).src();
+  return gulp.task("less:watch", function(cb) {
+    if (!(enabled && watchEnabled)) {
+      log.info("Skipping less:watch: Disabled.");
       return cb();
     }
-    compile = function() {
-      return gulp.src(entryFilePath).pipe(gulpLess()).pipe(gulp.dest(targetDirectoryPath)).pipe(gulpLivereload({
-        auto: false
-      }));
-    };
-    return diskWatcher.src().on("change", function(options) {
-      if (!options.path.match(/\.less/)) {
-        return;
+    log.debug("[less:watch] Entry file path: `" + entryFilePath + "`.");
+    log.debug("[less:watch] Target directory path: `" + targetDirectoryPath + "`.");
+    fs.exists(entryFilePath, function(exists) {
+      var compile;
+      if (!exists) {
+        log.info("Skipping less:compile: File `" + entryFilePath + "` not found.");
+        return cb();
       }
-      log.debug("[less:watch] Compiling `" + entryFilePath + "`.");
-      return compile();
+      compile = function() {
+        return gulp.src(entryFilePath).pipe(gulpLess()).pipe(gulp.dest(targetDirectoryPath)).pipe(gulpLivereload({
+          auto: false
+        }));
+      };
+      watcher.on("change", function(filePath) {
+        if (!filePath.match(/\.less/)) {
+          return;
+        }
+        log.debug("[less:watch] Compiling `" + entryFilePath + "`.");
+        return compile();
+      });
+      watcher.on("add", function(filePath) {
+        if (!filePath.match(/\.less/)) {
+          return;
+        }
+        log.debug("[less:watch] Compiling `" + entryFilePath + "`.");
+        return compile();
+      });
+      return watcher.on("unlink", function(filePath) {
+        if (!filePath.match(/\.less/)) {
+          return;
+        }
+        log.debug("[less:watch] Compiling `" + entryFilePath + "`.");
+        return compile();
+      });
     });
   });
-});
+};

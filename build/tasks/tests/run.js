@@ -1,4 +1,4 @@
-var directoryPath, enabled, gulp, log, options, path, tests;
+var gulp, log, path, tests;
 
 gulp = require("gulp");
 
@@ -8,17 +8,17 @@ log = require("../../lib/log");
 
 tests = require("../../lib/tests");
 
-options = coffeeProjectOptions.tests;
-
-enabled = options.enabled;
-
-directoryPath = path.resolve(options.directoryPath);
-
-gulp.task("tests:run", ["compile"], function(cb) {
-  if (!enabled) {
-    log.info("Skipping tests:run: Disabled.");
-    return cb();
-  }
-  log.debug("[tests:run] Directory path: `" + directoryPath + "`.");
-  tests(directoryPath, true, "spec", cb);
-});
+module.exports = function(coffeeProjectOptions) {
+  var directoryPath, enabled, options;
+  options = coffeeProjectOptions.tests;
+  enabled = options.enabled;
+  directoryPath = path.resolve(options.directoryPath);
+  return gulp.task("tests:run", function(cb) {
+    if (!enabled) {
+      log.info("Skipping tests:run: Disabled.");
+      return cb();
+    }
+    log.debug("[tests:run] Directory path: `" + directoryPath + "`.");
+    tests(directoryPath, true, "spec", cb);
+  });
+};

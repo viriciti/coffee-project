@@ -1,10 +1,14 @@
 (require './src')
-  documentation: enabled: false # still has a bug
-  livereload:    enabled: false
-  browserify:    enabled: false
-  less:          enabled: false
-  forever:       enabled: false
-  clean:         enabled: true
-  copy:          enabled: true
-  watch:         enabled: true
-  tests:         enabled: true
+	bundle:        enabled: false
+	documentation: enabled: false
+	forever:       enabled: false
+	nodemon:       enabled: false
+	less:          enabled: false
+	livereload:    enabled: false
+	tests:         enabled: false
+	copy:          enabled: true
+	watch:         enabled: true
+	coffee:
+		enabled:             true
+		sourceDirectoryPath: "./src"
+		targetDirectoryPath: "./build"
