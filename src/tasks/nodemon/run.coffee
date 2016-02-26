@@ -1,8 +1,9 @@
 fs   = require "fs"
 path = require "path"
 
-gulp        = require "gulp"
-gulpNodemon = require "gulp-nodemon"
+gulp       = require "gulp"
+nodemon    = require "gulp-nodemon"
+livereload = require "gulp-livereload"
 
 log = require "../../lib/log"
 
@@ -15,11 +16,17 @@ module.exports = (coffeeProjectOptions) ->
 	extensions    = options.extensions or []
 
 	watchNodemon = ->
-		gulpNodemon
+		nodemon
 			verbose: not not +process.env.DEBUG
 			script:  entryFilePath
 			watch:   watchGlob
 			ext:     extensions.join " "
+		.on "restart", (paths) ->
+			return unless coffeeProjectOptions.livereload?.enabled
+
+			setTimeout ->
+				livereload().write path: paths[0]
+			, 1000
 
 	gulp.task "nodemon:run", (cb) ->
 		unless enabled

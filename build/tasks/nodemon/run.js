@@ -1,4 +1,4 @@
-var fs, gulp, gulpNodemon, log, path;
+var fs, gulp, livereload, log, nodemon, path;
 
 fs = require("fs");
 
@@ -6,7 +6,9 @@ path = require("path");
 
 gulp = require("gulp");
 
-gulpNodemon = require("gulp-nodemon");
+nodemon = require("gulp-nodemon");
+
+livereload = require("gulp-livereload");
 
 log = require("../../lib/log");
 
@@ -21,11 +23,21 @@ module.exports = function(coffeeProjectOptions) {
   }
   extensions = options.extensions || [];
   watchNodemon = function() {
-    return gulpNodemon({
+    return nodemon({
       verbose: !!+process.env.DEBUG,
       script: entryFilePath,
       watch: watchGlob,
       ext: extensions.join(" ")
+    }).on("restart", function(paths) {
+      var ref;
+      if (!((ref = coffeeProjectOptions.livereload) != null ? ref.enabled : void 0)) {
+        return;
+      }
+      return setTimeout(function() {
+        return livereload().write({
+          path: paths[0]
+        });
+      }, 1000);
     });
   };
   return gulp.task("nodemon:run", function(cb) {
