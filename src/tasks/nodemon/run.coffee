@@ -25,7 +25,7 @@ module.exports = (coffeeProjectOptions) ->
 			return unless coffeeProjectOptions.livereload?.enabled
 
 			setTimeout ->
-				livereload().write path: paths[0]
+				livereload().write path: paths[0] if paths and paths[0]
 			, 1000
 
 	gulp.task "nodemon:run", (cb) ->
