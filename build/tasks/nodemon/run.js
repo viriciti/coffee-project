@@ -34,9 +34,11 @@ module.exports = function(coffeeProjectOptions) {
         return;
       }
       return setTimeout(function() {
-        return livereload().write({
-          path: paths[0]
-        });
+        if (paths && paths[0]) {
+          return livereload().write({
+            path: paths[0]
+          });
+        }
       }, 1000);
     });
   };
