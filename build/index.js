@@ -41,7 +41,9 @@ defaults = {
   },
   clean: {
     enabled: true,
-    targetDirectoryPath: targetDirectoryPath
+    targetDirectoryPath: targetDirectoryPath,
+    clientDirectoryPath: targetClientDirectoryPath,
+    serverDirectoryPath: targetServerDirectoryPath
   },
   coffee: {
     enabled: true,

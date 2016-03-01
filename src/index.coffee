@@ -31,6 +31,8 @@ defaults =
 	clean:
 		enabled:             true
 		targetDirectoryPath: targetDirectoryPath
+		clientDirectoryPath: targetClientDirectoryPath
+		serverDirectoryPath: targetServerDirectoryPath
 
 	coffee:
 		enabled:             true
