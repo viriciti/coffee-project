@@ -74,7 +74,12 @@ module.exports = function(coffeeProjectOptions) {
       }
       bundler.add(entry);
       compile = function() {
-        return bundler.bundle().pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
+        var bundlerStream;
+        bundlerStream = bundler.bundle();
+        bundlerStream.on("error", function(error) {
+          return log.error("[bundle:watch]: " + error.message);
+        });
+        return bundlerStream.pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
           return log.debug("[bundle:watch] Compiled `" + file.path + "`.");
         })).pipe(gulp.dest(target)).pipe(gulpLivereload({
           auto: false
