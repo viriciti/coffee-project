@@ -54,7 +54,7 @@ module.exports = function(coffeeProjectOptions) {
       if (!filePath.match(new RegExp(sourceDirectoryPath))) {
         return;
       }
-      log.debug("[coffee:watch] Compiling `" + filePath + "`.");
+      log.info("[coffee:watch] Compiling `" + filePath + "`.");
       return compilePath(filePath);
     });
     watcher.on("add", function(filePath) {
@@ -64,7 +64,7 @@ module.exports = function(coffeeProjectOptions) {
       if (!filePath.match(new RegExp(sourceDirectoryPath))) {
         return;
       }
-      log.debug("[coffee:watch] Compiling `" + filePath + "`.");
+      log.info("[coffee:watch] Compiling `" + filePath + "`.");
       return compilePath(filePath);
     });
     watcher.on("unlink", function(filePath) {
@@ -74,7 +74,7 @@ module.exports = function(coffeeProjectOptions) {
       if (!filePath.match(new RegExp(sourceDirectoryPath))) {
         return;
       }
-      log.debug("[coffee:watch] Removing `" + filePath + "`.");
+      log.info("[coffee:watch] Removing `" + filePath + "`.");
       return removePath(filePath);
     });
   });

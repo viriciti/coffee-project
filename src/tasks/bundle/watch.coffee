@@ -59,7 +59,11 @@ module.exports = (coffeeProjectOptions) ->
 			bundler.add entry
 
 			compile = ->
-				bundler.bundle()
+				bundlerStream = bundler.bundle()
+				
+				bundlerStream.on "error", (error) -> log.error "[bundle:watch]: #{error.message}"
+
+				bundlerStream
 					.pipe vinylSource bundle
 					.pipe gulpTap (file) ->
 						log.debug "[bundle:watch] Compiled `#{file.path}`."
