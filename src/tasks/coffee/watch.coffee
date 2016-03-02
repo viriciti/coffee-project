@@ -46,19 +46,19 @@ module.exports = (coffeeProjectOptions) ->
 		watcher.on "change", (filePath) ->
 			return unless filePath.match /\.coffee$/
 			return unless filePath.match new RegExp sourceDirectoryPath
-			log.debug "[coffee:watch] Compiling `#{filePath}`."
+			log.info "[coffee:watch] Compiling `#{filePath}`."
 			compilePath filePath
 
 		watcher.on "add", (filePath) ->
 			return unless filePath.match /\.coffee$/
 			return unless filePath.match new RegExp sourceDirectoryPath
-			log.debug "[coffee:watch] Compiling `#{filePath}`."
+			log.info "[coffee:watch] Compiling `#{filePath}`."
 			compilePath filePath
 
 		watcher.on "unlink", (filePath) ->
 			return unless filePath.match /\.coffee$/
 			return unless filePath.match new RegExp sourceDirectoryPath
-			log.debug "[coffee:watch] Removing `#{filePath}`."
+			log.info "[coffee:watch] Removing `#{filePath}`."
 			removePath filePath
 
 		return
