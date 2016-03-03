@@ -62,7 +62,7 @@ defaults =
 	  enabled:             true,
 	  entryFilePath:       "app.js",
 	  watchGlob:           [ "#{targetServerDirectoryPath}/**/*" ]
-	  extra:               [ "cfg.js", "app.js" ]
+	  extra:               [ "cfg.js", "app.js", "gulpfile.coffee" ]
 	  extensions:          [ "js", "jade" ]
 
 	forever:
