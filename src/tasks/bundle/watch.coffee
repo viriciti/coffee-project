@@ -14,6 +14,7 @@ log = require "../../lib/log"
 module.exports = (coffeeProjectOptions) ->
 	options      = coffeeProjectOptions.bundle
 	enabled      = options.enabled
+	sourcemaps   = options.sourcemaps
 	externals    = options.externals or []
 	watchEnabled = coffeeProjectOptions.watch.enabled
 
@@ -46,7 +47,7 @@ module.exports = (coffeeProjectOptions) ->
 				# fullPaths:    true
 				extensions:   extensions
 				paths:        paths
-				debug:        true
+				debug:        sourcemaps
 
 			_.each externals, (external) ->
 				bundler.external external.expose or external.require
@@ -60,7 +61,7 @@ module.exports = (coffeeProjectOptions) ->
 
 			compile = ->
 				bundlerStream = bundler.bundle()
-				
+
 				bundlerStream.on "error", (error) -> log.error "[bundle:watch]: #{error.message}"
 
 				bundlerStream

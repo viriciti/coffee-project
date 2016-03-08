@@ -23,9 +23,10 @@ watchify = require("watchify");
 log = require("../../lib/log");
 
 module.exports = function(coffeeProjectOptions) {
-  var enabled, externals, options, watchEnabled;
+  var enabled, externals, options, sourcemaps, watchEnabled;
   options = coffeeProjectOptions.bundle;
   enabled = options.enabled;
+  sourcemaps = options.sourcemaps;
   externals = options.externals || [];
   watchEnabled = coffeeProjectOptions.watch.enabled;
   return gulp.task("bundle:watch", function(cb) {
@@ -56,7 +57,7 @@ module.exports = function(coffeeProjectOptions) {
         packageCache: {},
         extensions: extensions,
         paths: paths,
-        debug: true
+        debug: sourcemaps
       }));
       _.each(externals, function(external) {
         return bundler.external(external.expose || external.require);
