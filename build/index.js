@@ -23,6 +23,7 @@ targetServerDirectoryPath = targetDirectoryPath + "/server";
 defaults = {
   bundle: {
     enabled: true,
+    sourcemaps: true,
     externals: [],
     vendor: {
       entry: sourceClientDirectoryPath + "/js/vendor/vendor.coffee",
