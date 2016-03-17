@@ -37,5 +37,7 @@ module.exports = (coffeeProjectOptions) ->
 	gulp.task "clean", ["clean:client", "clean:server"], (cb) ->
 		cb()
 
+		process.exit()
+
 		return
 

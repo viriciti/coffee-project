@@ -33,5 +33,6 @@ module.exports = function(coffeeProjectOptions) {
   });
   return gulp.task("clean", ["clean:client", "clean:server"], function(cb) {
     cb();
+    process.exit();
   });
 };
