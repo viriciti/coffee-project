@@ -11,6 +11,9 @@ module.exports = ->
 			"copy:compile"
 			"documentation:compile"
 			"less:compile"
-		], cb
+		], ->
+			cb()
 
-		return
+			process.exit()
+
+			return
