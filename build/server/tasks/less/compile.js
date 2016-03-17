@@ -49,7 +49,7 @@ module.exports = function(coffeeProjectOptions) {
           return cb();
         }
         console.log(themesDirectoryPath, stat.name, "theme.less");
-        themeFilePath = path.resolve(themesDirectoryPath, stat.name, stat.name + ".less");
+        themeFilePath = path.resolve(themesDirectoryPath, stat.name, "theme.less");
         return fs.exists(themeFilePath, function(exists) {
           if (!exists) {
             log.warn("[less:themes] Entry file `" + themeFilePath + "` not found.");

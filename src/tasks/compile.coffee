@@ -16,4 +16,4 @@ module.exports = ->
 
 			process.exit()
 
-			return
+		return

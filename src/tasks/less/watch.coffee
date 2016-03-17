@@ -2,6 +2,7 @@ fs             = require "fs"
 gulp           = require "gulp"
 gulpLess       = require "gulp-less"
 gulpLivereload = require "gulp-livereload"
+path           = require "path"
 
 log         = require "../../lib/log"
 diskWatcher = require "../../lib/disk-watcher"
@@ -9,10 +10,15 @@ diskWatcher = require "../../lib/disk-watcher"
 module.exports = (coffeeProjectOptions) ->
 	options             = coffeeProjectOptions.less
 	enabled             = options.enabled
-	entryFilePath       = options.entryFilePath
-	targetDirectoryPath = options.targetDirectoryPath
+	theme               = options.theme
+	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
+	targetDirectoryPath = path.resolve options.targetDirectoryPath
+	entryFilePath       = path.resolve sourceDirectoryPath, "themes/#{theme}/#{theme}.less"
 	watchEnabled        = coffeeProjectOptions.watch.enabled
 	watcher             = diskWatcher(coffeeProjectOptions).src()
+
+	unless theme
+		entryFilePath = path.resolve sourceDirectoryPath, "app.less"
 
 	gulp.task "less:watch", (cb) ->
 		unless enabled and watchEnabled
