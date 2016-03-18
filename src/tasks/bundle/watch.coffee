@@ -50,6 +50,7 @@ module.exports = (coffeeProjectOptions) ->
 				debug:        sourcemaps
 
 			_.each externals, (external) ->
+				external = require: external if typeof external is "string"
 				bundler.external external.expose or external.require
 
 			for transform in transforms or []

@@ -47,7 +47,11 @@ module.exports = function(coffeeProjectOptions) {
   gulp.task("bundle:vendor", function(cb) {
     var bundle, bundlePath, source, target;
     if (!enabled) {
-      log.info("[bundle:compile] Disabled.");
+      log.info("[bundle:compile] [vendor] Disabled.");
+      return cb();
+    }
+    if (!(externals != null ? externals.length : void 0)) {
+      log.info("[bundle:compile] [vendor] No externals defined. Skipping.");
       return cb();
     }
     target = options.vendor.target;
@@ -70,11 +74,17 @@ module.exports = function(coffeeProjectOptions) {
       });
       bundler.transform(coffeeify);
       _.each(externals, function(external) {
+        if (typeof external === "string") {
+          external = {
+            require: external
+          };
+        }
         if (external.expose) {
           return bundler.require(external.require, {
             expose: external.expose
           });
         } else {
+          console.log;
           return bundler.require(external.require);
         }
       });

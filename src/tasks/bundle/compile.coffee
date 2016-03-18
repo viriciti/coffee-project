@@ -33,7 +33,11 @@ module.exports = (coffeeProjectOptions) ->
 
 	gulp.task "bundle:vendor", (cb) ->
 		unless enabled
-			log.info "[bundle:compile] Disabled."
+			log.info "[bundle:compile] [vendor] Disabled."
+			return cb()
+
+		unless externals?.length
+			log.info "[bundle:compile] [vendor] No externals defined. Skipping."
 			return cb()
 
 		target     = options.vendor.target
@@ -57,9 +61,12 @@ module.exports = (coffeeProjectOptions) ->
 			bundler.transform coffeeify
 
 			_.each externals, (external) ->
+				external = require: external if typeof external is "string"
+
 				if external.expose
 					bundler.require external.require, expose: external.expose
 				else
+					console.log 
 					bundler.require external.require
 
 			bundler.bundle()
