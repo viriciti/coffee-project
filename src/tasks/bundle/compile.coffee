@@ -69,7 +69,7 @@ module.exports = (coffeeProjectOptions) ->
 				if external.expose
 					bundler.require external.require, expose: external.expose
 				else
-					console.log 
+					console.log
 					bundler.require external.require
 
 			s = bundler.bundle()
@@ -113,6 +113,7 @@ module.exports = (coffeeProjectOptions) ->
 				debug:      if isProduction then false else sourcemaps
 
 			_.each externals, (external) ->
+				external = require: external if typeof external is "string"
 				bundler.external external.expose or external.require
 
 			for transform in transforms or []

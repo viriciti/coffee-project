@@ -3,84 +3,115 @@ fs          = require "fs"
 gulp        = require "gulp"
 gulpCssnano = require "gulp-cssnano"
 gulpLess    = require "gulp-less"
+gulpRename  = require "gulp-rename"
 gulpTap     = require "gulp-tap"
 lsr         = require "lsr"
 path        = require "path"
-   
+
 log = require "../../lib/log"
 
 module.exports = (coffeeProjectOptions) ->
 	options             = coffeeProjectOptions.less
 	enabled             = options.enabled
-	theme               = options.theme
+	theme               = options.theme or "default"
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	themesDirectoryPath = path.resolve sourceDirectoryPath, "themes"
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
-	entryFilePath       = path.resolve sourceDirectoryPath, "themes/#{theme}/theme.less"
+	isProduction        = process.env.NODE_ENV is "production"
 
-	unless theme
-		entryFilePath = path.resolve sourceDirectoryPath, "app.less"
-
-	gulp.task "less:themes", (cb) ->
-		unless enabled is true
-			log.info "Skipping less:themes: Disabled."
-			return cb()
-		
-		unless theme
-			log.info "Skipping less:themes: No theme specified."
-			return cb()
-
+	buildAllThemes = (cb) ->
 		lsr themesDirectoryPath, (error, stats) ->
 			return cb error if error
 
-			async.each stats, (stat, cb) ->
+			async.eachSeries stats, (stat, cb) ->
 				return cb() unless stat.isDirectory()
 
-				console.log themesDirectoryPath, stat.name, "theme.less"
-				themeFilePath = path.resolve themesDirectoryPath, stat.name, "theme.less"
+				theme = stat.name
+
+				log.debug ""
+
+				themeFilePath = path.resolve themesDirectoryPath, theme, "theme.less"
 
 				fs.exists themeFilePath, (exists) ->
 					unless exists
 						log.warn "[less:themes] Entry file `#{themeFilePath}` not found."
 						return cb()
 
-					gulp.src themeFilePath
+					s = gulp.src themeFilePath
 						.pipe gulpTap (file) ->
-							log.debug "[less:themes] Compiling `#{file.path}`."
+							log.debug "[less:compile] Compiling `#{file.path}`."
 							return
-
 						.pipe gulpLess()
-						.pipe gulpCssnano()
+
+					s = s.pipe gulpCssnano() if isProduction
+
+					s
+						.pipe gulpRename "#{theme}.css"
 						.pipe gulp.dest targetDirectoryPath
 						.on "end", cb
-			, ->
-				console.log "done!"
-				process.exit()
+			, cb
 
-				cb()
-
-		return
-
-	gulp.task "less:compile", (cb) ->
-		unless enabled
-			log.info "Skipping less:compile: Disabled."
-			return cb()
-
-		log.debug "[less:compile] Entry file path: `#{entryFilePath}`."
-		log.debug "[less:compile] Target directory path: `#{targetDirectoryPath}`."
+	buildCurrentTheme = (cb) ->
+		entryFilePath = path.resolve sourceDirectoryPath, "themes/#{theme}/theme.less"
 
 		fs.exists entryFilePath, (exists) ->
 			unless exists
 				log.warn "[less:compile] Entry file `#{entryFilePath}` not found."
 				return cb()
 
-			gulp.src entryFilePath
+			s = gulp.src entryFilePath
 				.pipe gulpTap (file) ->
 					log.debug "[less:compile] Compiling `#{file.path}`."
 					return
-
 				.pipe gulpLess()
+
+			s = s.pipe gulpCssnano() if isProduction
+
+			s
+				.pipe gulpRename "#{theme}.css"
 				.pipe gulp.dest targetDirectoryPath
 				.on "end", cb
 
+	handleThemesCompile = (cb) ->
+		if isProduction
+			buildAllThemes cb
+		else
+			buildCurrentTheme cb
+
+	handleCompile = (cb) ->
+		log.debug "[less:compile] Entry file path: `#{entryFilePath}`."
+		log.debug "[less:compile] Target directory path: `#{targetDirectoryPath}`."
+
+		entryFilePath = path.resolve sourceDirectoryPath, "app.less"
+
+		fs.exists entryFilePath, (exists) ->
+			unless exists
+				log.warn "[less:compile] Entry file `#{entryFilePath}` not found."
+				return cb()
+
+			s = gulp.src entryFilePath
+				.pipe gulpTap (file) ->
+					log.debug "[less:compile] Compiling `#{file.path}`."
+					return
+				.pipe gulpLess()
+
+			s = s.pipe gulpCssnano() if isProduction
+
+			s.pipe gulp.dest targetDirectoryPath
+				.on "end", cb
+
+	gulp.task "less:compile", (cb) ->
+		unless enabled
+			log.info "[less:compile] Skipping : Disabled."
+			return cb()
+
+		fs.exists themesDirectoryPath, (themesFolderExists) ->
+			log.debug "[less:compile] Theme folder does#{if themesFolderExists then "" else " not"} exist."
+
+			if themesFolderExists
+				handleThemesCompile cb
+			else
+				handleCompile cb
+
 		return
+

@@ -11,3 +11,4 @@
 	coffee:
 		enabled:             true
 		sourceDirectoryPath: "src"
+		targetDirectoryPath: "build"
