@@ -1,4 +1,4 @@
-var _, browserify, coffeeReactify, coffeeify, fs, gulp, gulpTap, jadeify, log, path, vinylSource;
+var _, browserify, coffeeReactify, coffeeify, fs, gulp, gulpStreamify, gulpTap, gulpUglify, jadeify, log, path, vinylSource;
 
 _ = require("lodash");
 
@@ -12,7 +12,11 @@ fs = require("fs");
 
 gulp = require("gulp");
 
+gulpStreamify = require("gulp-streamify");
+
 gulpTap = require("gulp-tap");
+
+gulpUglify = require("gulp-uglify");
 
 jadeify = require("jadeify");
 
@@ -23,9 +27,10 @@ vinylSource = require("vinyl-source-stream");
 log = require("../../lib/log");
 
 module.exports = function(coffeeProjectOptions) {
-  var enabled, externals, isProduction, options;
+  var enabled, externals, isProduction, options, sourcemaps;
   options = coffeeProjectOptions.bundle;
   enabled = options.enabled;
+  sourcemaps = options.sourcemaps;
   externals = options.externals || [];
   isProduction = process.env.NODE_ENV === "production";
   gulp.task("bundle:vendor:rm", function(cb) {
@@ -59,7 +64,7 @@ module.exports = function(coffeeProjectOptions) {
     source = options.vendor.source;
     bundlePath = target + "/" + bundle;
     fs.exists(bundlePath, function(bundleExists) {
-      var bundler;
+      var bundler, s;
       if (!isProduction) {
         if (bundleExists) {
           log.info("[bundle:compile] [vendor] Bundle already there. Skipping.");
@@ -88,9 +93,13 @@ module.exports = function(coffeeProjectOptions) {
           return bundler.require(external.require);
         }
       });
-      return bundler.bundle().pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
+      s = bundler.bundle().pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
         return log.debug("[bundle:compile] [vendor] Compiled `" + file.path + "`.");
-      })).pipe(gulp.dest(target)).on("end", cb);
+      }));
+      if (isProduction) {
+        s = s.pipe(gulpStreamify(gulpUglify()));
+      }
+      return s.pipe(gulp.dest(target)).on("end", cb);
     });
   });
   return gulp.task("bundle:compile", ["bundle:vendor"], function(cb) {
@@ -111,7 +120,7 @@ module.exports = function(coffeeProjectOptions) {
     log.debug("[bundle:compile] [app] extensions:       `" + ((extensions || []).join(", ")) + "`.");
     log.debug("[bundle:compile] [app] transforms:       `" + ((transforms || []).join(", ")) + "`.");
     fs.exists(entry, function(exists) {
-      var bundler, i, len, ref, transform;
+      var bundler, i, len, ref, s, transform;
       if (!exists) {
         log.info("[bundle:compile] [app] Entry file `" + entry + "` not found.");
         return cb();
@@ -119,9 +128,14 @@ module.exports = function(coffeeProjectOptions) {
       bundler = browserify({
         extensions: extensions,
         paths: paths,
-        debug: !isProduction
+        debug: isProduction ? false : sourcemaps
       });
       _.each(externals, function(external) {
+        if (typeof external === "string") {
+          external = {
+            require: external
+          };
+        }
         return bundler.external(external.expose || external.require);
       });
       ref = transforms || [];
@@ -136,9 +150,13 @@ module.exports = function(coffeeProjectOptions) {
         }
       }
       bundler.add(entry);
-      return bundler.bundle().pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
+      s = bundler.bundle().pipe(vinylSource(bundle)).pipe(gulpTap(function(file) {
         return log.debug("[bundle:compile] [app] Compiled `" + file.path + "`.");
-      })).pipe(gulp.dest(target)).on("end", cb);
+      }));
+      if (isProduction) {
+        s = s.pipe(gulpStreamify(gulpUglify()));
+      }
+      return s.pipe(gulp.dest(target)).on("end", cb);
     });
   });
 };

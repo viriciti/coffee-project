@@ -23,12 +23,13 @@ watchify = require("watchify");
 log = require("../../lib/log");
 
 module.exports = function(coffeeProjectOptions) {
-  var enabled, externals, options, sourcemaps, watchEnabled;
+  var enabled, externals, isProduction, options, sourcemaps, watchEnabled;
   options = coffeeProjectOptions.bundle;
   enabled = options.enabled;
   sourcemaps = options.sourcemaps;
   externals = options.externals || [];
   watchEnabled = coffeeProjectOptions.watch.enabled;
+  isProduction = process.env.NODE_ENV === "production";
   return gulp.task("bundle:watch", function(cb) {
     var bundle, entry, extensions, paths, target, transforms;
     if (!(enabled && watchEnabled)) {
@@ -57,7 +58,7 @@ module.exports = function(coffeeProjectOptions) {
         packageCache: {},
         extensions: extensions,
         paths: paths,
-        debug: sourcemaps
+        debug: isProduction ? false : sourcemaps
       }));
       _.each(externals, function(external) {
         if (typeof external === "string") {

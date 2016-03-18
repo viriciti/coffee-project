@@ -17,6 +17,7 @@ module.exports = (coffeeProjectOptions) ->
 	sourcemaps   = options.sourcemaps
 	externals    = options.externals or []
 	watchEnabled = coffeeProjectOptions.watch.enabled
+	isProduction = process.env.NODE_ENV is "production"
 
 	gulp.task "bundle:watch", (cb) ->
 		unless enabled and watchEnabled
@@ -47,7 +48,7 @@ module.exports = (coffeeProjectOptions) ->
 				# fullPaths:    true
 				extensions:   extensions
 				paths:        paths
-				debug:        sourcemaps
+				debug:        if isProduction then false else sourcemaps
 
 			_.each externals, (external) ->
 				external = require: external if typeof external is "string"
