@@ -60,6 +60,11 @@ module.exports = function(coffeeProjectOptions) {
         debug: sourcemaps
       }));
       _.each(externals, function(external) {
+        if (typeof external === "string") {
+          external = {
+            require: external
+          };
+        }
         return bundler.external(external.expose || external.require);
       });
       ref = transforms || [];
