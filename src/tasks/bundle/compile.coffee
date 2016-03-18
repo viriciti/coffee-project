@@ -4,7 +4,9 @@ coffeeify      = require "coffeeify"
 coffeeReactify = require "coffee-reactify"
 fs             = require "fs"
 gulp           = require "gulp"
+gulpStreamify  = require "gulp-streamify"
 gulpTap        = require "gulp-tap"
+gulpUglify     = require "gulp-uglify"
 jadeify        = require "jadeify"
 path           = require "path"
 vinylSource    = require "vinyl-source-stream"
@@ -14,6 +16,7 @@ log = require "../../lib/log"
 module.exports = (coffeeProjectOptions) ->
 	options      = coffeeProjectOptions.bundle
 	enabled      = options.enabled
+	sourcemaps   = options.sourcemaps
 	externals    = options.externals or []
 	isProduction = process.env.NODE_ENV is "production"
 
@@ -66,14 +69,17 @@ module.exports = (coffeeProjectOptions) ->
 				if external.expose
 					bundler.require external.require, expose: external.expose
 				else
-					console.log 
+					console.log
 					bundler.require external.require
 
-			bundler.bundle()
+			s = bundler.bundle()
 				.pipe vinylSource bundle
 				.pipe gulpTap (file) ->
 					log.debug "[bundle:compile] [vendor] Compiled `#{file.path}`."
-				.pipe gulp.dest target
+
+			s = s.pipe gulpStreamify gulpUglify() if isProduction
+
+			s.pipe gulp.dest target
 				.on "end", cb
 
 		return
@@ -104,9 +110,10 @@ module.exports = (coffeeProjectOptions) ->
 			bundler = browserify
 				extensions: extensions
 				paths:      paths
-				debug:      not isProduction
+				debug:      if isProduction then false else sourcemaps
 
 			_.each externals, (external) ->
+				external = require: external if typeof external is "string"
 				bundler.external external.expose or external.require
 
 			for transform in transforms or []
@@ -116,11 +123,14 @@ module.exports = (coffeeProjectOptions) ->
 
 			bundler.add entry
 
-			bundler.bundle()
+			s = bundler.bundle()
 				.pipe vinylSource bundle
 				.pipe gulpTap (file) ->
 					log.debug "[bundle:compile] [app] Compiled `#{file.path}`."
-				.pipe gulp.dest target
+
+			s = s.pipe gulpStreamify gulpUglify() if isProduction
+
+			s.pipe gulp.dest target
 				.on "end", cb
 
 		return

@@ -64,7 +64,8 @@ defaults = {
   },
   less: {
     enabled: true,
-    entryFilePath: sourceClientDirectoryPath + "/less/app.less",
+    theme: false,
+    sourceDirectoryPath: sourceClientDirectoryPath + "/less",
     targetDirectoryPath: targetClientDirectoryPath + "/css"
   },
   livereload: {
@@ -94,11 +95,16 @@ defaults = {
 };
 
 module.exports = function(options) {
-  var i, len, ref, results, stat;
+  var env, i, len, ref, results, stat;
   if (options == null) {
     options = {};
   }
-  options = _.merge(defaults, options);
+  env = {};
+  if (process.env.APP_THEME) {
+    env.less = {
+      theme: process.env.APP_THEME
+    };
+  }
   ref = lsr.sync(__dirname + "/tasks");
   results = [];
   for (i = 0, len = ref.length; i < len; i++) {
@@ -106,7 +112,7 @@ module.exports = function(options) {
     if (stat.isDirectory()) {
       continue;
     }
-    results.push(require(stat.fullPath)(options));
+    results.push(require(stat.fullPath)(_.merge(defaults, options, env)));
   }
   return results;
 };

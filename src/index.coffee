@@ -53,18 +53,19 @@ defaults =
 
 	less:
 		enabled:             true
-		entryFilePath:       "#{sourceClientDirectoryPath}/less/app.less"
+		theme:               false
+		sourceDirectoryPath: "#{sourceClientDirectoryPath}/less"
 		targetDirectoryPath: "#{targetClientDirectoryPath}/css"
 
 	livereload:
 		enabled:             true
 
 	nodemon:
-	  enabled:             true,
-	  entryFilePath:       "app.js",
-	  watchGlob:           [ "#{targetServerDirectoryPath}/**/*" ]
-	  extra:               [ "cfg.js", "app.js", "gulpfile.coffee" ]
-	  extensions:          [ "js", "jade" ]
+		enabled:             true,
+		entryFilePath:       "app.js",
+		watchGlob:           [ "#{targetServerDirectoryPath}/**/*" ]
+		extra:               [ "cfg.js", "app.js", "gulpfile.coffee" ]
+		extensions:          [ "js", "jade" ]
 
 	forever:
 		enabled:             false
@@ -81,8 +82,9 @@ defaults =
 		testDirectoryPath:   testDirectoryPath
 
 module.exports = (options = {}) ->
-	options = _.merge defaults, options
+	env = {}
+	env.less = theme: process.env.APP_THEME if process.env.APP_THEME
 
 	for stat in lsr.sync "#{__dirname}/tasks"
 		continue if stat.isDirectory()
-		require(stat.fullPath) options
+		require(stat.fullPath) _.merge defaults, options, env

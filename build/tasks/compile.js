@@ -6,9 +6,9 @@ runSequence = require("run-sequence");
 
 module.exports = function() {
   return gulp.task("compile", function(cb) {
-    return runSequence(["clean:server"], ["bundle:compile", "coffee:compile", "copy:compile", "documentation:compile", "less:compile"], function() {
+    runSequence(["clean:server"], ["bundle:compile", "coffee:compile", "copy:compile", "documentation:compile", "less:compile"], function() {
       cb();
-      process.exit();
+      return process.exit();
     });
   });
 };
