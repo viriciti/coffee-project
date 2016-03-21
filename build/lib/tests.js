@@ -1,4 +1,8 @@
-var cp, fs, log, path, pathToMocha, tests;
+var _, async, cp, fs, log, path, possibleMochaPaths, tests;
+
+_ = require("lodash");
+
+async = require("async");
 
 fs = require("fs");
 
@@ -8,28 +12,39 @@ cp = require("child_process");
 
 log = require("./log");
 
-pathToMocha = path.resolve(__dirname + "/../../node_modules/.bin/mocha");
+possibleMochaPaths = [path.resolve(__dirname, "../../node_modules/.bin/mocha"), path.resolve(__dirname, "../node_modules/.bin/mocha")];
 
 tests = function(directory, exit, reporter, cb) {
-  return fs.exists(directory, function(exists) {
-    var childProcess;
-    if (!exists) {
-      log.info("Skipping mocha: Directory `" + directory + "` not found.");
-      return cb();
+  return async.map(possibleMochaPaths, function(pathToMocha, cb) {
+    return fs.exists(pathToMocha, function(exists) {
+      return cb(null, exists ? pathToMocha : false);
+    });
+  }, function(error, result) {
+    var pathToMocha;
+    if (error) {
+      return cb(error);
     }
-    childProcess = cp.spawn(pathToMocha, ["--recursive", "--compilers", "coffee:coffee-script/register", "--reporter", reporter, directory]);
-    childProcess.stdout.on("data", function(chunk) {
-      return process.stdout.write(chunk);
-    });
-    childProcess.stderr.on("data", function(chunk) {
-      return process.stderr.write(chunk);
-    });
-    return childProcess.once("close", function() {
-      if (exit) {
-        return process.exit();
-      } else {
+    pathToMocha = _.find(result);
+    return fs.exists(directory, function(exists) {
+      var childProcess;
+      if (!exists) {
+        log.info("Skipping mocha: Directory `" + directory + "` not found.");
         return cb();
       }
+      childProcess = cp.spawn(pathToMocha, ["--recursive", "--compilers", "coffee:coffee-script/register", "--reporter", reporter, directory]);
+      childProcess.stdout.on("data", function(chunk) {
+        return process.stdout.write(chunk);
+      });
+      childProcess.stderr.on("data", function(chunk) {
+        return process.stderr.write(chunk);
+      });
+      return childProcess.once("close", function() {
+        if (exit) {
+          return process.exit();
+        } else {
+          return cb();
+        }
+      });
     });
   });
 };
