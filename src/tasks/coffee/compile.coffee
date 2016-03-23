@@ -1,7 +1,8 @@
-path       = require "path"
-gulp       = require "gulp"
-gulpCoffee = require "gulp-coffee"
-gulpTap    = require "gulp-tap"
+path           = require "path"
+gulp           = require "gulp"
+gulpCoffee     = require "gulp-coffee"
+gulpSourcemaps = require "gulp-sourcemaps"
+gulpTap        = require "gulp-tap"
 
 log = require "../../lib/log"
 
@@ -10,6 +11,8 @@ module.exports = (coffeeProjectOptions) ->
 	enabled             = options.enabled
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
+	isProduction        = process.env.NODE_ENV is "production"
+	noSourcemaps        = if isProduction then true else (not not options.noSourcemaps)
 
 	gulp.task "coffee:compile", (cb) ->
 		unless enabled is true
@@ -23,11 +26,17 @@ module.exports = (coffeeProjectOptions) ->
 
 		coffeeCompiler.on "error", log.error.bind log
 
-		gulp.src "#{sourceDirectoryPath}/**/*.coffee"
+		s = gulp.src "#{sourceDirectoryPath}/**/*.coffee"
 			.pipe gulpTap (file) ->
 				log.debug "[coffee:compile] Compiling `#{file.path}`."
 
-			.pipe coffeeCompiler
+		s = s.pipe gulpSourcemaps.init() unless noSourcemaps
+
+		s = s.pipe coffeeCompiler
+
+		s = s.pipe gulpSourcemaps.write() unless noSourcemaps
+
+		s
 			.pipe gulp.dest targetDirectoryPath
 			.once "end", cb
 

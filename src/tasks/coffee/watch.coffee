@@ -1,7 +1,8 @@
-fs         = require "fs"
-gulp       = require "gulp"
-gulpCoffee = require "gulp-coffee"
-path       = require "path"
+fs             = require "fs"
+gulp           = require "gulp"
+gulpCoffee     = require "gulp-coffee"
+gulpSourcemaps = require "gulp-sourcemaps"
+path           = require "path"
 
 log         = require "../../lib/log"
 diskWatcher = require "../../lib/disk-watcher"
@@ -12,6 +13,8 @@ module.exports = (coffeeProjectOptions) ->
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
 	watchEnabled        = coffeeProjectOptions.watch.enabled
+	isProduction        = process.env.NODE_ENV is "production"
+	noSourcemaps        = if isProduction then true else (not not options.noSourcemaps)
 
 	gulp.task "coffee:watch", (cb) ->
 		unless enabled and watchEnabled
@@ -29,9 +32,12 @@ module.exports = (coffeeProjectOptions) ->
 			sourceDirectory = path.dirname sourcePath
 			targetDirectory = sourceDirectory.replace sourceDirectoryPath, targetDirectoryPath
 
-			gulp.src sourcePath
-				.pipe coffeeCompiler
-				.pipe gulp.dest targetDirectory
+			s = gulp.src sourcePath
+			s = s.pipe gulpSourcemaps.init() unless noSourcemaps
+			s = s.pipe coffeeCompiler
+			s = s.pipe gulpSourcemaps.write() unless noSourcemaps
+
+			s.pipe gulp.dest targetDirectory
 
 		removePath = (sourcePath) ->
 			targetPath = sourcePath
