@@ -32,6 +32,7 @@ module.exports = (coffeeProjectOptions) ->
 			if themesFolderExists
 				entryFilePath = path.resolve sourceDirectoryPath, "themes/#{theme}/theme.less"
 			else
+				theme         = "app"
 				entryFilePath = path.resolve sourceDirectoryPath, "app.less"
 
 			log.debug "[less:watch] Entry file path: `#{entryFilePath}`."
