@@ -7,8 +7,10 @@ cp    = require "child_process"
 log = require "./log"
 
 possibleMochaPaths = [
-	path.resolve __dirname, "../../node_modules/.bin/mocha"
+	path.resolve __dirname, "./node_modules/.bin/mocha"
 	path.resolve __dirname, "../node_modules/.bin/mocha"
+	path.resolve __dirname, "../../node_modules/.bin/mocha"
+	path.resolve __dirname, "../../../node_modules/.bin/mocha"
 ]
 
 tests = (directory, exit, reporter, cb) ->
@@ -17,8 +19,9 @@ tests = (directory, exit, reporter, cb) ->
 			cb null, if exists then pathToMocha else false
 	, (error, result) ->
 		return cb error if error
-
+		console.log result
 		pathToMocha = _.find result
+		log.debug "Found mocha at #{pathToMocha}"
 
 		fs.exists directory, (exists) ->
 			unless exists
