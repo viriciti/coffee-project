@@ -10,12 +10,12 @@
   "dependencies": {
     "async": "^2.1.2",
     "browserify": "^13.1.1",
-    "codo": "^2.1.2",
     "coffee-reactify": "^5.1.0",
     "coffee-script": "^1.11.1",
     "coffeeify": "^2.0.1",
     "forever-monitor": "^1.7.1",
     "gulp": "^3.9.1",
+    "gulp-apidoc": "^0.2.5",
     "gulp-coffee": "^2.3.2",
     "gulp-cssnano": "^2.1.2",
     "gulp-less": "^3.2.0",
