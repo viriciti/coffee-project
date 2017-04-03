@@ -18,17 +18,17 @@ defaults =
 		sourcemaps: true
 		externals:  []
 		vendor:
-				entry:  "#{sourceClientDirectoryPath}/js/vendor/vendor.coffee"
-				target: "#{targetClientDirectoryPath}/js"
-				bundle: "vendor.bundle.js"
-				source: "#{sourceClientDirectoryPath}/js/app/vendor"
+			entry:  "#{sourceClientDirectoryPath}/js/vendor/vendor.coffee"
+			target: "#{targetClientDirectoryPath}/js"
+			bundle: "vendor.bundle.js"
+			source: "#{sourceClientDirectoryPath}/js/app/vendor"
 		app:
-				entry:      "#{sourceClientDirectoryPath}/js/app/app.coffee"
-				target:     "#{targetClientDirectoryPath}/js"
-				bundle:     "app.bundle.js"
-				paths:      [ "#{sourceClientDirectoryPath}/js/app" ]
-				extensions: [ ".coffee", ".jade", ".cjsx" ]
-				transforms: [ "coffee-reactify", "jadeify" ]
+			entry:      "#{sourceClientDirectoryPath}/js/app/app.coffee"
+			target:     "#{targetClientDirectoryPath}/js"
+			bundle:     "app.bundle.js"
+			paths:      [ "#{sourceClientDirectoryPath}/js/app" ]
+			extensions: [ ".coffee", ".jade", ".cjsx" ]
+			transforms: [ "coffee-reactify", "jadeify" ]
 
 	clean:
 		enabled:             true
