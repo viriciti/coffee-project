@@ -51,6 +51,7 @@ defaults =
 		enabled:             true
 		sourceDirectoryPath: sourceDirectoryPath
 		targetDirectoryPath: documentationPath
+		configDirectoryPath: sourceDirectoryPath
 
 	less:
 		enabled:             true

@@ -9,6 +9,7 @@ module.exports = (coffeeProjectOptions) ->
 	enabled             = options.enabled
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
+	configDirectoryPath = path.resolve options.configDirectoryPath
 
 	gulp.task "documentation:compile", (cb) ->
 		unless enabled is true
@@ -20,8 +21,9 @@ module.exports = (coffeeProjectOptions) ->
 		log.debug "[documentation:compile] Compiling."
 
 		apidoc
-			src:            sourceDirectoryPath
-			dest:           targetDirectoryPath
+			src:    sourceDirectoryPath
+			dest:   targetDirectoryPath
+			config: configDirectoryPath
 		, cb
 		
 		return
