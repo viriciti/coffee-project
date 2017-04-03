@@ -1,6 +1,6 @@
 (require './src')
 	bundle:        enabled: false
-	documentation: enabled: false
+	documentation: enabled: true
 	forever:       enabled: false
 	nodemon:       enabled: false
 	less:          enabled: false

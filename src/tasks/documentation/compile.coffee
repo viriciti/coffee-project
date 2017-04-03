@@ -1,8 +1,8 @@
-path = require "path"
-gulp = require "gulp"
+gulp   = require "gulp"
+path   = require "path"
+apidoc = require "gulp-apidoc"
 
 log  = require "../../lib/log"
-docs = require "../../lib/docs"
 
 module.exports = (coffeeProjectOptions) ->
 	options             = coffeeProjectOptions.documentation
@@ -19,6 +19,9 @@ module.exports = (coffeeProjectOptions) ->
 		log.debug "[documentation:compile] Target directory path: `#{targetDirectoryPath}`."
 		log.debug "[documentation:compile] Compiling."
 
-		docs sourceDirectoryPath, targetDirectoryPath, false, cb
-
+		apidoc
+			src:            sourceDirectoryPath
+			dest:           targetDirectoryPath
+		, cb
+		
 		return
