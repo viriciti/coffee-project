@@ -10,7 +10,7 @@ module.exports = (coffeeProjectOptions) ->
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
 
-	gulp.task "apidoc", (cb) ->
+	gulp.task "documentation:compile", (cb) ->
 		unless enabled is true
 			log.info "Skipping documentation:compile: Disabled."
 			return cb()
