@@ -22,7 +22,6 @@ module.exports = (coffeeProjectOptions) ->
 		apidoc
 			src:            sourceDirectoryPath
 			dest:           targetDirectoryPath
-			includeFilters: [".*\\.coffee$"]
 		, cb
 		
 		return
