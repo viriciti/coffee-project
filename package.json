@@ -10,7 +10,6 @@
   "dependencies": {
     "async": "^2.1.2",
     "browserify": "^13.1.1",
-    "codo": "^2.1.2",
     "coffee-reactify": "^5.1.0",
     "coffee-script": "^1.11.1",
     "coffeeify": "^2.0.1",
