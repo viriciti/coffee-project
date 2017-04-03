@@ -1,8 +1,8 @@
-path = require "path"
-gulp = require "gulp"
+gulp   = require "gulp"
+path   = require "path"
+apidoc = require "gulp-apidoc"
 
 log  = require "../../lib/log"
-docs = require "../../lib/docs"
 
 module.exports = (coffeeProjectOptions) ->
 	options             = coffeeProjectOptions.documentation
@@ -10,7 +10,7 @@ module.exports = (coffeeProjectOptions) ->
 	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
 	targetDirectoryPath = path.resolve options.targetDirectoryPath
 
-	gulp.task "documentation:compile", (cb) ->
+	gulp.task "apidoc", (cb) ->
 		unless enabled is true
 			log.info "Skipping documentation:compile: Disabled."
 			return cb()
@@ -19,6 +19,10 @@ module.exports = (coffeeProjectOptions) ->
 		log.debug "[documentation:compile] Target directory path: `#{targetDirectoryPath}`."
 		log.debug "[documentation:compile] Compiling."
 
-		docs sourceDirectoryPath, targetDirectoryPath, false, cb
-
+		apidoc
+			src:            sourceDirectoryPath
+			dest:           targetDirectoryPath
+			includeFilters: [".*\\.coffee$"]
+		, cb
+		
 		return

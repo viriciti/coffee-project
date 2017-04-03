@@ -6,6 +6,7 @@ log = require "./lib/log"
 sourceDirectoryPath       = "src"
 targetDirectoryPath       = "build"
 testDirectoryPath         = "test"
+documentationPath         = "docs"
 sourceClientDirectoryPath = "#{sourceDirectoryPath}/client"
 sourceServerDirectoryPath = "#{sourceDirectoryPath}/server"
 targetClientDirectoryPath = "#{targetDirectoryPath}/client"
@@ -49,7 +50,7 @@ defaults =
 	documentation:
 		enabled:             true
 		sourceDirectoryPath: sourceDirectoryPath
-		targetDirectoryPath: targetDirectoryPath
+		targetDirectoryPath: documentationPath
 
 	less:
 		enabled:             true
