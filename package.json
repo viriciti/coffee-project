@@ -1,10 +1,10 @@
 {
   "name": "coffee-project",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "A gulp based project for coffee-script, based on the awesome id-project by Industrial",
   "repository": {
     "type": "git",
-    "url": "git://github.com/viriciti/coffee-project.git"
+    "url": "git://github.com/stofstik/coffee-project.git"
   },
   "main": "index.js",
   "dependencies": {
