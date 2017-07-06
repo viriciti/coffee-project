@@ -6,6 +6,7 @@ log = require "./lib/log"
 sourceDirectoryPath       = "src"
 targetDirectoryPath       = "build"
 testDirectoryPath         = "test"
+documentationPath         = "docs"
 sourceClientDirectoryPath = "#{sourceDirectoryPath}/client"
 sourceServerDirectoryPath = "#{sourceDirectoryPath}/server"
 targetClientDirectoryPath = "#{targetDirectoryPath}/client"
@@ -17,17 +18,17 @@ defaults =
 		sourcemaps: true
 		externals:  []
 		vendor:
-				entry:  "#{sourceClientDirectoryPath}/js/vendor/vendor.coffee"
-				target: "#{targetClientDirectoryPath}/js"
-				bundle: "vendor.bundle.js"
-				source: "#{sourceClientDirectoryPath}/js/app/vendor"
+			entry:  "#{sourceClientDirectoryPath}/js/vendor/vendor.coffee"
+			target: "#{targetClientDirectoryPath}/js"
+			bundle: "vendor.bundle.js"
+			source: "#{sourceClientDirectoryPath}/js/app/vendor"
 		app:
-				entry:      "#{sourceClientDirectoryPath}/js/app/app.coffee"
-				target:     "#{targetClientDirectoryPath}/js"
-				bundle:     "app.bundle.js"
-				paths:      [ "#{sourceClientDirectoryPath}/js/app" ]
-				extensions: [ ".coffee", ".jade", ".cjsx" ]
-				transforms: [ "coffee-reactify", "jadeify" ]
+			entry:      "#{sourceClientDirectoryPath}/js/app/app.coffee"
+			target:     "#{targetClientDirectoryPath}/js"
+			bundle:     "app.bundle.js"
+			paths:      [ "#{sourceClientDirectoryPath}/js/app" ]
+			extensions: [ ".coffee", ".jade", ".cjsx" ]
+			transforms: [ "coffee-reactify", "jadeify" ]
 
 	clean:
 		enabled:             true
@@ -49,7 +50,8 @@ defaults =
 	documentation:
 		enabled:             true
 		sourceDirectoryPath: sourceDirectoryPath
-		targetDirectoryPath: targetDirectoryPath
+		targetDirectoryPath: documentationPath
+		configDirectoryPath: sourceDirectoryPath
 
 	less:
 		enabled:             true
