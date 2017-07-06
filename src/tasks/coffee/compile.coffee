@@ -1,3 +1,5 @@
+_ = require "underscore"
+async = require "async"
 path           = require "path"
 gulp           = require "gulp"
 gulpCoffee     = require "gulp-coffee"
@@ -9,8 +11,6 @@ log = require "../../lib/log"
 module.exports = (coffeeProjectOptions) ->
 	options             = coffeeProjectOptions.coffee
 	enabled             = options.enabled
-	sourceDirectoryPath = path.resolve options.sourceDirectoryPath
-	targetDirectoryPath = path.resolve options.targetDirectoryPath
 	isProduction        = process.env.NODE_ENV is "production"
 	noSourcemaps        = if isProduction then true else (not not options.noSourcemaps)
 
@@ -19,25 +19,36 @@ module.exports = (coffeeProjectOptions) ->
 			log.info "Skipping coffee:compile: Disabled."
 			return cb()
 
-		log.debug "[coffee:compile] Source directory path: `#{sourceDirectoryPath}`."
-		log.debug "[coffee:compile] Target directory path: `#{targetDirectoryPath}`."
+		sourceDirectoryPath = options.sourceDirectoryPath
+		targetDirectoryPath = options.targetDirectoryPath
+		sourceDirectoryPath = [ sourceDirectoryPath ] unless Array.isArray sourceDirectoryPath
+		targetDirectoryPath = [ targetDirectoryPath ] unless Array.isArray targetDirectoryPath
 
-		coffeeCompiler = gulpCoffee bare: true
+		async.each (_.zip sourceDirectoryPath, targetDirectoryPath), ([source, target], cb) ->
 
-		coffeeCompiler.on "error", log.error.bind log
+			source = path.resolve source
+			target = path.resolve target
 
-		s = gulp.src "#{sourceDirectoryPath}/**/*.coffee"
-			.pipe gulpTap (file) ->
-				log.debug "[coffee:compile] Compiling `#{file.path}`."
+			log.debug "[coffee:compile] Source directory path: `#{source}`."
+			log.debug "[coffee:compile] Target directory path: `#{target}`."
 
-		s = s.pipe gulpSourcemaps.init() unless noSourcemaps
+			coffeeCompiler = gulpCoffee bare: true
 
-		s = s.pipe coffeeCompiler
+			coffeeCompiler.on "error", log.error.bind log
 
-		s = s.pipe gulpSourcemaps.write() unless noSourcemaps
+			s = gulp.src "#{source}/**/*.coffee"
+				.pipe gulpTap (file) ->
+					log.debug "[coffee:compile] Compiling `#{file.path}`."
 
-		s
-			.pipe gulp.dest targetDirectoryPath
-			.once "end", cb
+			s = s.pipe gulpSourcemaps.init() unless noSourcemaps
+
+			s = s.pipe coffeeCompiler
+
+			s = s.pipe gulpSourcemaps.write() unless noSourcemaps
+
+			s
+				.pipe gulp.dest target
+				.once "end", cb
+		, cb
 
 		return
