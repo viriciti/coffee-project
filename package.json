@@ -1,6 +1,6 @@
 {
   "name": "@tn-group/coffee-project",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "A gulp based project for coffee-script, based on the awesome id-project by Industrial",
   "repository": {
     "type": "git",
