@@ -37,6 +37,8 @@
     "mocha": "^3.1.2",
     "rimraf": "^2.5.4",
     "run-sequence": "^1.2.2",
+    "uglify-js": "^3.4.9",
+    "uglify-to-browserify": "^2.1.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0",
     "winston": "^2.3.0"
